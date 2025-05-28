@@ -1,5 +1,9 @@
 # Waitlist Kit 🚀
 
+[![Deploy with Vercel](https://img.shields.io/badge/Deploy_to-Vercel-%23000000?logo=vercel&logoColor=white)](#option-a-%E2%80%93-launch-on-vercel-recommended)
+[![Built with Supabase](https://img.shields.io/badge/Powered%20by-Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 *A one-click deploy template that gives you a "Coming soon → Join the wait-list" page in minutes.*
 
 ![Screenshot of Waitlist Kit landing page](./public/og-waitlist-kit.png)
@@ -13,22 +17,52 @@
 
 ## 2  Apply the database schema
 
-Your Supabase project is empty—let's add the **waitlist** table, RLS policies, and view.
+If you deploy with Vercel **and** connect your Supabase project in the deploy-wizard, *all SQL migrations run automatically* – skip ahead to Step&nbsp;3.
 
-### One-click (SQL editor)
-
-1. In the Supabase dashboard open **SQL Editor → New query**.  
-2. Copy-paste the contents of [`supabase/migrations/init.sql`](./supabase/migrations/init.sql).  
-3. Click **Run** – you should see `RUN` in green.
-
-### CLI alternative
+Creating the database by hand? Use the CLI once:
 
 ```bash
-supabase link --project-ref <your-project-ref>   # one-time
-supabase db push --file supabase/migrations/init.sql
+# one-time setup
+supabase link --project-ref <your-project-ref>
+# pushes every *.sql file in supabase/migrations/ (idempotent)
+supabase db push
 ```
 
-## 3  Grab your API keys
+> The folder already contains everything you need: table, RLS policies, email-safe view, etc. Future changes are tracked as new files in the same directory.
+
+## 3  (Optional) Add Re-Send e-mail keys
+
+Waitlist Kit ships with a welcome e-mail. To enable it (and to brand Supabase's magic-link e-mails) create an account at [Re-Send](https://resend.com) and copy:
+
+| key | where to find it |
+| --- | --- |
+| `RESEND_API_KEY` | Re-Send dashboard → **API Keys** |
+| `RESEND_FROM_EMAIL` | A verified sender address (or the fallback `no-reply@resend.dev`) |
+
+Don't have them yet? Skip this step – the site works without and logs a friendly warning.
+
+> **Tip:** once keys are in place run `pnpm test:email` locally (requires `TEST_EMAIL=you@example.com`) to verify delivery.
+
+By default the repo will **not** send the extra *Welcome* e-mail.  
+If you'd like to enable it later simply add `ENABLE_WELCOME_EMAIL=true` to your env file.
+
+## 4  Point Supabase to Re-Send (1 min)
+
+In the Supabase dashboard open **Auth → Settings → SMTP** and paste:
+
+| field | value |
+|-------|-------|
+| Host  | `smtp.resend.com` |
+| Port  | `587` |
+| User  | `apikey` |
+| Password | your `RESEND_API_KEY` |
+| Sender name | whatever you like (e.g. *Waitlist Kit*) |
+
+Click **Save** → all Supabase OTP / magic-link e-mails now deliver via Re-Send.
+
+*(Advanced: you can edit subjects & HTML under **Auth → Templates**.)*
+
+## 5  Grab your API keys
 
 Open the new project → **Settings → API** and copy:
 
@@ -39,15 +73,15 @@ Open the new project → **Settings → API** and copy:
 
 *(You'll paste these in the next step.)*
 
-## 4  Quick-start deploy
+## 6  Quick-start deploy
 
 ### Option A – Launch on Vercel (recommended)
 
 1. Click the button ↓. Choose the Git scope & repo name you want.  
-2. Hit **Create** → on the *Configure Project* screen fill the two env-vars with the keys from **Step 3**.  
+2. Hit **Create** → on the *Configure Project* screen fill the two env-vars with the keys from **Step 5**.  
 3. Click **Deploy** – Vercel builds the app and gives you a live URL.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fcharlieellington%2Fwaitlist-kit&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&envDescription=Add+your+Supabase+project+URL+and+anon+key.&envLink=https%3A%2F%2Fsupabase.com%2Fdashboard%2Fproject%2F_%2Fsettings%2Fapi)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fcharlieellington%2Fwaitlist-kit&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&optionalEnv=RESEND_API_KEY,RESEND_FROM_EMAIL&envDescription=Add+your+Supabase+URL+and+anon+key+(Re-Send+keys+optional).&envLink=https%3A%2F%2Fsupabase.com%2Fdashboard%2Fproject%2F_%2Fsettings%2Fapi)
 
 ### Option B – Run locally
 
@@ -58,7 +92,8 @@ cd waitlist-kit
 
 # 2. Add your keys
 cp env.example .env.local
-# open .env.local and paste the URL + anon key from Step 3
+# open .env.local and paste the URL + anon key from Step 5
+# (Optional) add the Re-Send keys from Step 3 for welcome e-mails
 
 # 3. (Optional) run SQL migrations if you created a fresh database
 supabase db push --file supabase/migrations/init.sql
@@ -76,7 +111,7 @@ pnpm dev
 
 If that works you're ready to customise! 🎉
 
-## 5  Customise the template
+## 7  Customise the template
 
 * **Landing copy** – edit `content.json` or tweak components in `components/`.
 * **Branding** – update `public/og-waitlist-kit.png`, favicon, colours, etc.
@@ -99,3 +134,12 @@ MIT licence – free to modify, distribute & **sell**. 🎉
 
 Built by Charlie Ellington – PRs & issues welcome!  
 Roadmap in [`scratchpad-waitlist.md`](./energy-flow/pages/03-projects/Waitlist-app/scratchpad-waitlist.md).
+
+### Handy scripts
+
+```bash
+pnpm dev      # start Next.js in development
+pnpm lint     # eslint + prettier
+pnpm build    # production build
+pnpm start    # run the production build locally
+```

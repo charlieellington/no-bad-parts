@@ -4,6 +4,8 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { resend, isResendConfigured } from "@/lib/resend";
+import WelcomeEmail from "@/components/emails/WelcomeEmail";
 
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -77,6 +79,18 @@ export const joinWaitlistAction = async (formData: FormData) => {
   if (insertError) {
     console.error(insertError.message);
     return encodedRedirect("error", "/", "Could not join waitlist");
+  }
+
+  // Send transactional welcome e-mail (non-blocking)
+  if (isResendConfigured && process.env.ENABLE_WELCOME_EMAIL === "true") {
+    resend.emails
+      .send({
+        from: process.env.RESEND_FROM_EMAIL!,
+        to: email,
+        subject: "You're on the list 🎉",
+        react: WelcomeEmail({ name }),
+      })
+      .catch((e) => console.warn("Resend error", e));
   }
 
   // Send magic-link email
