@@ -1,0 +1,2 @@
+- [x] Local dev server for waitlist-landing started on port 3000 using `pnpm dev` in a separate terminal.
+- [x] Local dev server for energy-flow started on port 3010 using `pnpm dev` with `PORT=3010` (from project root; previous attempt had a directory error). 
