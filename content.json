@@ -1,6 +1,6 @@
 {
   "heroTitle": "Launch your product with a waitlist in minutes",
-  "heroSubtitle": "Waitlist Kit is a self-hosted template powered by Next.js, Supabase, and Tailwind to collect emails before launch. Deploy to Vercel in one click.",
+  "heroSubtitle": "Waitlist Kit is a self-hosted template powered by Next.js, Supabase, Resend and Tailwind to collect emails before launch. Deploy to Vercel in one click.",
   "ctaText": "Join the waitlist",
   "features": [
     "Zero-setup Vercel deploy",

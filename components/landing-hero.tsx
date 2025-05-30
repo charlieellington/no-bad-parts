@@ -19,7 +19,7 @@ export default async function LandingHero() {
   const showJoin = !session;
 
   return (
-    <section className="flex flex-col items-center gap-10 py-16 px-4 text-center">
+    <section className="flex flex-col items-center gap-10 pt-16 pb-0 px-4 text-center">
       <h1 className="text-4xl md:text-5xl font-bold leading-tight max-w-3xl">
         {heroTitle}
       </h1>
@@ -42,7 +42,7 @@ export default async function LandingHero() {
         </ul>
       ) : null}
 
-      <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
+      <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent mt-8 mb-4" />
     </section>
   );
 } 

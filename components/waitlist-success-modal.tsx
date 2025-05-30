@@ -9,7 +9,7 @@ export default function WaitlistSuccessModal({ message }: { message: string }) {
   return (
     <Dialog open={open} modal>
       <DialogContent
-        className="sm:max-w-sm text-center"
+        className="sm:max-w-sm text-center [&>button[data-radix-dialog-close]]:hidden"
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >

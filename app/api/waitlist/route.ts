@@ -9,7 +9,8 @@ export async function GET(request: Request) {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("waitlist_public")
-    .select("id,name,note,hidden,created_at")
+    .select("id,name,note,hidden,avatar_url,rank,created_at")
+    .order("rank", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: true })
     .range(offset, offset + limit - 1);
 

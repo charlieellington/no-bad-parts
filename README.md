@@ -119,6 +119,15 @@ If that works you're ready to customise! 🎉
 
 ---
 
+## Ranking bonus (profile photo & reason)
+
+When a logged-in user uploads a photo or tells you why they're excited, they *jump up the wait-list*.
+
+Out-of-the-box we do this with a simple, RLS-safe trick: we set their `rank` to be the **smallest existing rank – 1** so the row bubbles to the top. No extra secrets needed.  
+Want a strict re-ordering algorithm? Add your **service-role** key and follow the steps in [`docs/ranking-bonus.md`](./docs/ranking-bonus.md).
+
+---
+
 ## Features
 
 • **Next 14 App Router** – typed server actions, streaming, RSC.

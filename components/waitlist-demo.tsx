@@ -1,4 +1,12 @@
+"use client";
+
 import { formatDistanceToNowStrict } from "date-fns";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // A static placeholder list shown on the landing page before Supabase is configured.
 export default function WaitlistDemo() {
@@ -9,9 +17,9 @@ export default function WaitlistDemo() {
   ];
 
   return (
-    <section className="max-w-3xl mx-auto w-full px-4 mt-8">
-      <h2 className="text-2xl font-bold">Join the waitlist</h2>
-      <p className="text-muted-foreground mb-4 text-sm">Stay updated for the launch and be the first to access.</p>
+    <section className="max-w-3xl mx-auto w-full px-4 mt-4">
+      <h2 className="text-2xl font-bold text-center">Waitlist</h2>
+      <p className="text-muted-foreground mb-4 text-sm text-center">Stay updated for the launch and be the first to access.</p>
       <div className="w-full overflow-x-auto border rounded-md">
         <table className="w-full text-sm">
           <thead>
@@ -27,7 +35,24 @@ export default function WaitlistDemo() {
               <tr key={row.id} className="border-b last:border-none">
                 <td className="py-2 pr-4 w-8">{idx + 1}</td>
                 <td className="py-2 pr-4">{row.name}</td>
-                <td className="py-2 pr-4 max-w-[200px] truncate">{row.note ?? "—"}</td>
+                <td className="py-2 pr-4 max-w-[200px]">
+                  {row.note ? (
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="line-clamp-3 cursor-pointer">
+                            {row.note}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          {row.note}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    "—"
+                  )}
+                </td>
                 <td className="py-2">
                   {formatDistanceToNowStrict(row.created_at, { addSuffix: true })}
                 </td>

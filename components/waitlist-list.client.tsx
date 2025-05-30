@@ -4,10 +4,17 @@ import { useRef, useEffect, useState } from "react";
 import useSWRInfinite from "swr/infinite";
 import { formatDistanceToNowStrict } from "date-fns";
 import { Spinner } from "@/components/ui/spinner";
+import { WaitlistAvatar } from "@/components/waitlist-avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const PAGE_SIZE = 20;
 
-export default function WaitlistList() {
+export default function WaitlistList({ currentUserId }: { currentUserId?: string }) {
   const getKey = (pageIndex: number, previous: any) => {
     if (previous && previous.data.length < PAGE_SIZE) return null;
     return `/api/waitlist?offset=${pageIndex * PAGE_SIZE}&limit=${PAGE_SIZE}`;
@@ -39,9 +46,9 @@ export default function WaitlistList() {
   if (error) return null;
 
   return (
-    <section className="max-w-3xl mx-auto w-full px-4 mt-8">
-      <h2 className="text-2xl font-bold">Join the waitlist</h2>
-      <p className="text-muted-foreground mb-4 text-sm">Stay updated for the launch and be the first to access.</p>
+    <section className="max-w-3xl mx-auto w-full px-4 mt-4">
+      <h2 className="text-2xl font-bold text-center">Waitlist</h2>
+      <p className="text-muted-foreground mb-4 text-sm text-center">Stay updated for the launch and be the first to access.</p>
       {items.length === 0 ? (
         <p className="text-muted-foreground">Be the first to join the wait-list!</p>
       ) : (
@@ -50,6 +57,7 @@ export default function WaitlistList() {
             <thead>
               <tr className="text-xs uppercase text-muted-foreground border-b">
                 <th className="py-2 text-left font-normal">#</th>
+                <th className="py-2 text-left font-normal" />
                 <th className="py-2 text-left font-normal">Name</th>
                 <th className="py-2 text-left font-normal">Reason</th>
                 <th className="py-2 text-left font-normal">Joined</th>
@@ -57,11 +65,37 @@ export default function WaitlistList() {
             </thead>
             <tbody>
               {items.map((row: any, idx: number) => (
-                <tr key={row.id} className="border-b last:border-none">
-                  <td className="py-2 pr-4 w-8">{idx + 1}</td>
+                <tr
+                  key={row.id}
+                  className={`border-b last:border-none ${row.id === currentUserId ? "bg-accent/20 font-medium" : ""}`}
+                >
+                  <td className="py-2 pr-6 w-8">{idx + 1}</td>
+                  <td className="py-2 pr-4 w-10">
+                    <WaitlistAvatar
+                      name={row.name}
+                      avatarUrl={row.avatar_url}
+                      hidden={row.hidden}
+                      size={28}
+                    />
+                  </td>
                   <td className="py-2 pr-4">{row.name}</td>
-                  <td className="py-2 pr-4 max-w-[200px] truncate">
-                    {row.note ?? "—"}
+                  <td className="py-2 pr-4 max-w-[200px]">
+                    {row.note ? (
+                      <TooltipProvider delayDuration={300}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="line-clamp-3 cursor-pointer">
+                              {row.note}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            {row.note}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="py-2">
                     {formatDistanceToNowStrict(new Date(row.created_at), {
