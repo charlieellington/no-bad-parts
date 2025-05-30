@@ -44,6 +44,9 @@ export const metadata = {
     images: ["/twitter-image.png"],
     creator: "@charlieellington",
   },
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 const geistSans = Geist({

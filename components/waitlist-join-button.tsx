@@ -16,7 +16,7 @@ export default async function WaitlistJoinButton({
   if (user) return null;
 
   return (
-    <div className={`mt-6 ${className}`.trim()}>
+    <div className={className}>
       <WaitlistModal triggerText={label} />
     </div>
   );

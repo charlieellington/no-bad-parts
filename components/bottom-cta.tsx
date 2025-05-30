@@ -12,7 +12,7 @@ export default function BottomCta() {
           loop as we open new spots.
         </p>
         <div className="flex justify-center">
-          <WaitlistJoinButton label="Join the wait-list" />
+          <WaitlistJoinButton label="Join the wait-list" className="mt-6" />
         </div>
       </div>
     </section>

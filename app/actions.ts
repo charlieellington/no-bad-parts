@@ -4,13 +4,18 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { resend, isResendConfigured } from "@/lib/resend";
-import WelcomeEmail from "@/components/emails/WelcomeEmail";
+
+function getBaseUrl() {
+  const hdrs = headers();
+  const host = hdrs.get("x-forwarded-host") || hdrs.get("host") || process.env.NEXT_PUBLIC_SITE_URL || "localhost:3000";
+  const proto = hdrs.get("x-forwarded-proto") || (host.startsWith("localhost") ? "http" : "https");
+  return `${proto}://${host}`;
+}
 
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
-  const origin = (await headers()).get("origin");
+  const origin = getBaseUrl();
 
   if (!email) {
     return encodedRedirect("error", "/sign-in", "Email is required");
@@ -53,59 +58,25 @@ export const joinWaitlistAction = async (formData: FormData) => {
     return encodedRedirect("error", "/", "Email is required");
   }
 
-  // Determine stored name
-  let name: string | null = nameInput.trim() || null;
-  if (hideName || !name) {
-    const { getRandomAnimal } = await import("@/utils/random-animal");
-    name = `Anon ${getRandomAnimal()}`;
-  }
+  // Stash the user-supplied metadata so we can write the row *after* e-mail verification.
+  const signupMeta = {
+    nameInput,
+    hideName,
+    note,
+    referrer,
+    utmSource,
+  };
+  const base64 = Buffer.from(JSON.stringify(signupMeta), "utf8").toString("base64");
+  const base64url = base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
   const supabase = await createClient();
+  const origin = getBaseUrl();
 
-  // Determine the next sequential rank (count of existing sign-ups + 1)
-  const { count: existingCount } = await supabase
-    .from("waitlist_public")
-    .select("id", { count: "exact", head: true });
-  const nextRank = (existingCount ?? 0) + 1;
-
-  // Build insert payload conditionally (omit note if migration not yet applied)
-  const payload: Record<string, any> = {
-    email,
-    name,
-    hidden: hideName,
-    referrer,
-    utm_source: utmSource,
-    rank: nextRank,
-  };
-  if (note) payload.note = note;
-
-  const { error: insertError } = await supabase
-    .from("waitlist_signups")
-    .insert(payload);
-
-  if (insertError) {
-    console.error(insertError.message);
-    return encodedRedirect("error", "/", "Could not join waitlist");
-  }
-
-  // Send transactional welcome e-mail (non-blocking)
-  if (isResendConfigured && process.env.ENABLE_WELCOME_EMAIL === "true") {
-    resend.emails
-      .send({
-        from: process.env.RESEND_FROM_EMAIL!,
-        to: email,
-        subject: "You're on the list 🎉",
-        react: WelcomeEmail({ name }),
-      })
-      .catch((e) => console.warn("Resend error", e));
-  }
-
-  // Send magic-link email
-  const origin = (await headers()).get("origin");
+  // Send magic-link that bounces back to our callback route with the encoded payload.
   await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${origin}/auth/callback?signup=${base64url}`,
     },
   });
 
