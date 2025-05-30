@@ -5,8 +5,8 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-function getBaseUrl() {
-  const hdrs = headers();
+async function getBaseUrl() {
+  const hdrs = await headers();
   const host = hdrs.get("x-forwarded-host") || hdrs.get("host") || process.env.NEXT_PUBLIC_SITE_URL || "localhost:3000";
   const proto = hdrs.get("x-forwarded-proto") || (host.startsWith("localhost") ? "http" : "https");
   return `${proto}://${host}`;
@@ -15,7 +15,7 @@ function getBaseUrl() {
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
-  const origin = getBaseUrl();
+  const origin = await getBaseUrl();
 
   if (!email) {
     return encodedRedirect("error", "/sign-in", "Email is required");
@@ -70,7 +70,7 @@ export const joinWaitlistAction = async (formData: FormData) => {
   const base64url = base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
   const supabase = await createClient();
-  const origin = getBaseUrl();
+  const origin = await getBaseUrl();
 
   // Send magic-link that bounces back to our callback route with the encoded payload.
   await supabase.auth.signInWithOtp({
