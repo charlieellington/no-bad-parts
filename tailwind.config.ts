@@ -1,14 +1,15 @@
 import type { Config } from "tailwindcss";
+import animatePlugin from "tailwindcss-animate";
 
-const config = {
+const config: Config = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx,jsx,js,mdx}",
+    "./components/**/*.{ts,tsx,jsx,js,mdx}",
+    "./lib/**/*.{ts,tsx,jsx,js}",
+    "./utils/**/*.{ts,tsx,jsx,js}",
+    "./docs/**/*.{mdx,md}",
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -52,6 +53,11 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "chart-1": "hsl(var(--chart-1))",
+        "chart-2": "hsl(var(--chart-2))",
+        "chart-3": "hsl(var(--chart-3))",
+        "chart-4": "hsl(var(--chart-4))",
+        "chart-5": "hsl(var(--chart-5))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -74,7 +80,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+  plugins: [animatePlugin],
+};
 
-export default config;
+export default config; 

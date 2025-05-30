@@ -1,11 +1,11 @@
 {
-  "heroTitle": "Launch your product with a waitlist in minutes",
-  "heroSubtitle": "Waitlist Kit is a self-hosted template powered by Next.js, Supabase, Resend and Tailwind to collect emails before launch. Deploy to Vercel in one click.",
-  "ctaText": "Join the waitlist",
+  "heroTitle": "No Bad Parts Collective",
+  "heroSubtitle": "A peer-led space to explore Internal Family Systems — join our closed-alpha wait-list and shape the journey.",
+  "ctaText": "Join the wait-list",
   "features": [
-    "Zero-setup Vercel deploy",
-    "Email magic-link Auth",
-    "Public waitlist page",
-    "Fully open-source"
+    "Book an IFS therapy session",
+    "Receive a session from a member",
+    "Give back another session",
+    "You're facilitated and guided by AI"
   ]
 } 

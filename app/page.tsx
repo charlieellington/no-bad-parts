@@ -6,6 +6,10 @@ import WaitlistList from "@/components/waitlist-list.client";
 import WaitlistDemo from "@/components/waitlist-demo";
 import ProfileCompletion from "@/components/profile/ProfileCompletion";
 import { createClient } from "@/utils/supabase/server";
+import LandingSections from "@/components/landing-sections";
+import FounderIntro from "@/components/founder-intro";
+import WaitlistJoinButton from "@/components/waitlist-join-button";
+import BottomCta from "@/components/bottom-cta";
 
 export default async function Home({
   searchParams,
@@ -33,17 +37,31 @@ export default async function Home({
       {user ? (
         <>
           <ProfileCompletion />
+          <LandingHero />
+          <FounderIntro />
           {hasEnvVars ? (
-            <WaitlistList currentUserId={user.id} />
+            <>
+              <WaitlistList currentUserId={user.id} />
+            </>
           ) : (
             <WaitlistDemo />
           )}
-          <LandingHero />
+          <LandingSections />
+          <BottomCta />
         </>
       ) : (
         <>
           <LandingHero />
-          {hasEnvVars ? <WaitlistList /> : <WaitlistDemo />}
+          <FounderIntro />
+          {hasEnvVars ? (
+            <>
+              <WaitlistList />
+            </>
+          ) : (
+            <WaitlistDemo />
+          )}
+          <LandingSections />
+          <BottomCta />
         </>
       )}
     </>

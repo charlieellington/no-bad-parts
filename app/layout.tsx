@@ -1,4 +1,3 @@
-import DeployButton from "@/components/deploy-button";
 import { EnvVarWarning } from "@/components/env-var-warning";
 import HeaderAuth from "@/components/header-auth";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -14,8 +13,37 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Product Waitlist Starter",
-  description: "Waitlist Kit is a self-hosted template powered by Next.js, Supabase, Resend and Tailwind to collect emails before launch.",
+  title: "No Bad Parts Collective — Peer-led IFS Exploration (Closed Alpha)",
+  description:
+    "Join No Bad Parts Collective — a peer-led space to explore Internal Family Systems with humans first, AI tools second. Sign up for the closed alpha and help shape the roadmap.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "No Bad Parts Collective — Peer-led IFS Exploration (Closed Alpha)",
+    description:
+      "Join No Bad Parts Collective — a peer-led space to explore Internal Family Systems with humans first, AI tools second. Sign up for the closed alpha and help shape the roadmap.",
+    url: "/",
+    siteName: "No Bad Parts Collective",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "No Bad Parts Collective hero image",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "No Bad Parts Collective — Peer-led IFS Exploration (Closed Alpha)",
+    description:
+      "Join No Bad Parts Collective — a peer-led space to explore Internal Family Systems with humans first, AI tools second. Sign up for the closed alpha and help shape the roadmap.",
+    images: ["/twitter-image.png"],
+    creator: "@charlieellington",
+  },
 };
 
 const geistSans = Geist({
@@ -42,10 +70,7 @@ export default function RootLayout({
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Product Waitlist Starter</Link>
-                    <div className="flex items-center gap-2">
-                      <DeployButton />
-                    </div>
+                    <Link href={"/"}>No Bad Parts Collective</Link>
                   </div>
                   {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                 </div>
@@ -64,15 +89,6 @@ export default function RootLayout({
                     rel="noreferrer"
                   >
                     Charlie Ellington at Energy Flow Studio
-                  </a>
-                  . Based on a fork of {" "}
-                  <a
-                    href="https://vercel.com/templates/next.js/supabase"
-                    target="_blank"
-                    className="font-bold hover:underline"
-                    rel="noreferrer"
-                  >
-                    Vercel's and Supabase's starter kit
                   </a>.
                 </p>
                 <ThemeSwitcher />

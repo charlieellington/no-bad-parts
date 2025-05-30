@@ -62,6 +62,12 @@ export const joinWaitlistAction = async (formData: FormData) => {
 
   const supabase = await createClient();
 
+  // Determine the next sequential rank (count of existing sign-ups + 1)
+  const { count: existingCount } = await supabase
+    .from("waitlist_public")
+    .select("id", { count: "exact", head: true });
+  const nextRank = (existingCount ?? 0) + 1;
+
   // Build insert payload conditionally (omit note if migration not yet applied)
   const payload: Record<string, any> = {
     email,
@@ -69,6 +75,7 @@ export const joinWaitlistAction = async (formData: FormData) => {
     hidden: hideName,
     referrer,
     utm_source: utmSource,
+    rank: nextRank,
   };
   if (note) payload.note = note;
 

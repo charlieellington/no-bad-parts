@@ -1,12 +1,11 @@
-# Waitlist Kit 🚀
+# No Bad Parts Collective — Landing & Waitlist 🚀
 
-[![Deploy with Vercel](https://img.shields.io/badge/Deploy_to-Vercel-%23000000?logo=vercel&logoColor=white)](#option-a-%E2%80%93-launch-on-vercel-recommended)
 [![Built with Supabase](https://img.shields.io/badge/Powered%20by-Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-*A one-click deploy template that gives you a "Coming soon → Join the wait-list" page in minutes.*
+*Peer-led Internal Family Systems collective — join the closed-alpha wait-list.*
 
-![Screenshot of Waitlist Kit landing page](./public/og-waitlist-kit.png)
+![Screenshot of No Bad Parts Collective landing page](./app/opengraph-image.png)
 
 ---
 
