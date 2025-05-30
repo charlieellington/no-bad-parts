@@ -10,6 +10,10 @@ export default async function FounderIntro() {
         <p className="leading-relaxed text-muted-foreground">
           I'm a designer-engineer fascinated by Internal Family Systems and learning I'm learning to code with AI help in Cursor and other tools. I'm trying out a new community/collective where people offer each other Internal Family System (IFS) sessions. This alpha test aims to see if peer-to-peer sessions—using AI as a listening tool but still keeping a human presence—can benefit others. All feedback is welcome, good or bad.
         </p>
+        <br></br>
+        <p className="leading-relaxed text-muted-foreground">
+          Please sign up to the waitlist to try a session or stay updated by email.
+        </p>
         <div className="flex items-center gap-4 mt-6">
           <WaitlistJoinButton className="mt-0" />
           <Link

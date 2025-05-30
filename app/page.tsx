@@ -41,10 +41,20 @@ export default async function Home({
           <FounderIntro />
           {hasEnvVars ? (
             <>
+              {/* Divider above waitlist */}
+              <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
               <WaitlistList currentUserId={user.id} />
+              {/* Divider below waitlist */}
+              <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
             </>
           ) : (
-            <WaitlistDemo />
+            <>
+              {/* Divider above waitlist (demo) */}
+              <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
+              <WaitlistDemo />
+              {/* Divider below waitlist (demo) */}
+              <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
+            </>
           )}
           <LandingSections />
           <BottomCta />
@@ -55,10 +65,20 @@ export default async function Home({
           <FounderIntro />
           {hasEnvVars ? (
             <>
+              {/* Divider above waitlist */}
+              <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
               <WaitlistList />
+              {/* Divider below waitlist */}
+              <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
             </>
           ) : (
-            <WaitlistDemo />
+            <>
+              {/* Divider above waitlist (demo) */}
+              <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
+              <WaitlistDemo />
+              {/* Divider below waitlist (demo) */}
+              <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
+            </>
           )}
           <LandingSections />
           <BottomCta />
