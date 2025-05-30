@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const redirectTo = requestUrl.searchParams.get("redirect_to") ?? "/";
-  const signupParam = requestUrl.searchParams.get("signup");
+  const signupParam = requestUrl.searchParams.get("signup"); // legacy fallback
   const origin = requestUrl.origin;
 
   // Prepare a response we can attach cookies to
@@ -41,52 +41,62 @@ export async function GET(request: NextRequest) {
 
     await supabase.auth.exchangeCodeForSession(code);
 
-    // If we came from the wait-list flow append the row now
+    // Fetch the now-authenticated user to inspect metadata
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    // Determine signup metadata either from query param (legacy) or user_metadata
+    let meta: any | null = null;
     if (signupParam) {
       try {
-        const metaJson = base64urlDecode(signupParam);
-        const { nameInput, hideName, note, referrer, utmSource } = JSON.parse(metaJson);
+        meta = JSON.parse(base64urlDecode(signupParam));
+      } catch {}
+    }
+    if (!meta && user?.user_metadata?.signupMeta) {
+      meta = user.user_metadata.signupMeta;
+    }
 
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user && user.email) {
-          // Display name logic
-          let name: string | null = (nameInput ?? "").trim() || null;
-          if (hideName || !name) name = `Anon ${getRandomAnimal()}`;
+    if (meta && user && user.email) {
+      const { nameInput, hideName, note, referrer, utmSource } = meta;
 
-          // Determine next rank
-          const { count } = await supabase
-            .from("waitlist_public")
-            .select("id", { count: "exact", head: true });
-          const nextRank = (count ?? 0) + 1;
+      // Display name logic
+      let name: string | null = (nameInput ?? "").trim() || null;
+      if (hideName || !name) name = `Anon ${getRandomAnimal()}`;
 
-          const payload: Record<string, any> = {
-            email: user.email,
-            name,
-            hidden: hideName,
-            rank: nextRank,
-            referrer: referrer ?? null,
-            utm_source: utmSource ?? null,
-          };
-          if (note) payload.note = note;
+      // Determine next rank
+      const { count } = await supabase
+        .from("waitlist_public")
+        .select("id", { count: "exact", head: true });
+      const nextRank = (count ?? 0) + 1;
 
-          const { error } = await supabase.from("waitlist_signups").insert(payload);
-          if (!error && isResendConfigured && process.env.ENABLE_WELCOME_EMAIL === "true") {
-            // Fire off welcome email (non-blocking)
-            resend.emails
-              .send({
-                from: process.env.RESEND_FROM_EMAIL!,
-                to: user.email,
-                subject: "You're on the list 🎉",
-                react: WelcomeEmail({ name }),
-              })
-              .catch((e) => console.warn("Resend error", e));
-          }
-        }
-      } catch (e) {
-        console.error("Callback signup handling failed", e);
+      const payload: Record<string, any> = {
+        email: user.email,
+        name,
+        hidden: hideName,
+        rank: nextRank,
+        referrer: referrer ?? null,
+        utm_source: utmSource ?? null,
+      };
+      if (note) payload.note = note;
+
+      const { error } = await supabase.from("waitlist_signups").insert(payload);
+      if (!error && isResendConfigured && process.env.ENABLE_WELCOME_EMAIL === "true") {
+        // Fire off welcome email (non-blocking)
+        resend.emails
+          .send({
+            from: process.env.RESEND_FROM_EMAIL!,
+            to: user.email,
+            subject: "You're on the list 🎉",
+            react: WelcomeEmail({ name }),
+          })
+          .catch((e) => console.warn("Resend error", e));
       }
+
+      // clear metadata to avoid reprocessing
+      try {
+        await supabase.auth.updateUser({ data: { signupMeta: null } });
+      } catch {}
     }
   }
 

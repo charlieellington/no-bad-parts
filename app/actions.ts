@@ -58,7 +58,7 @@ export const joinWaitlistAction = async (formData: FormData) => {
     return encodedRedirect("error", "/", "Email is required");
   }
 
-  // Stash the user-supplied metadata so we can write the row *after* e-mail verification.
+  // Persist form data inside the user metadata so we can pick it up after verification.
   const signupMeta = {
     nameInput,
     hideName,
@@ -66,17 +66,16 @@ export const joinWaitlistAction = async (formData: FormData) => {
     referrer,
     utmSource,
   };
-  const base64 = Buffer.from(JSON.stringify(signupMeta), "utf8").toString("base64");
-  const base64url = base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
   const supabase = await createClient();
   const origin = await getBaseUrl();
 
-  // Send magic-link that bounces back to our callback route with the encoded payload.
+  // Send magic-link that bounces back to our callback route.
   await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${origin}/auth/callback?signup=${base64url}`,
+      emailRedirectTo: `${origin}/auth/callback`,
+      data: { signupMeta },
     },
   });
 
