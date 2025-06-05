@@ -61,6 +61,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
+      <head>
+        {/* Chatway chat widget */}
+        <script
+          id="chatway"
+          async
+          src="https://cdn.chatway.app/widget.js?id=6qxBzuIMeu2h"
+        />
+      </head>
       <body className="bg-background text-foreground" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
