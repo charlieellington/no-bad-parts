@@ -10,6 +10,8 @@ import LandingSections from "@/components/landing-sections";
 import FounderIntro from "@/components/founder-intro";
 import WaitlistJoinButton from "@/components/waitlist-join-button";
 import BottomCta from "@/components/bottom-cta";
+import PremiumCtaBanner from "@/components/premium-cta-banner";
+import ConditionalBottomPremiumCta from "@/components/conditional-bottom-premium-cta";
 
 export default async function Home({
   searchParams,
@@ -37,6 +39,7 @@ export default async function Home({
       {user ? (
         <>
           <ProfileCompletion />
+          <PremiumCtaBanner />
           <LandingHero />
           <FounderIntro />
           {hasEnvVars ? (
@@ -65,27 +68,29 @@ export default async function Home({
           <LandingSections />
           <BottomCta />
           
-          {/* Premium CTA Section */}
-          <section className="mx-auto max-w-4xl px-4 py-8">
-            <div className="bg-card p-8 text-center space-y-4">
-              <p className="text-lg font-medium">
-                Really excited? Join for €100 for a years access and try a session straight away.
-              </p>
-              <div className="flex justify-center">
-                <a
-                  href="https://buy.stripe.com/dRm7szbWRex59bC88gdZ60n"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2 font-medium transition-colors"
-                >
-                  Buy Now
-                </a>
+          {/* Premium CTA Section - Hidden for completed users */}
+          <ConditionalBottomPremiumCta>
+            <section className="mx-auto max-w-4xl px-4 py-8">
+              <div className="bg-card p-8 text-center space-y-4">
+                <p className="text-lg font-medium">
+                  Really excited? Join for €100 for a years access and try a session straight away.
+                </p>
+                <div className="flex justify-center">
+                  <a
+                    href="https://buy.stripe.com/dRm7szbWRex59bC88gdZ60n"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2 font-medium transition-colors"
+                  >
+                    Buy Now
+                  </a>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  You'll be taken to a Stripe checkout page and after payment you'll be directed to a cal.com calendar app to book a call with me. Thank you!
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                You'll be taken to a Stripe checkout page and after payment you'll be directed to a cal.com calendar app to book a call with me. Thank you!
-              </p>
-            </div>
-          </section>
+            </section>
+          </ConditionalBottomPremiumCta>
         </>
       ) : (
         <>
