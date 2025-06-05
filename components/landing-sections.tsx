@@ -6,6 +6,55 @@ import Link from "next/link";
 export default function LandingSections() {
   return (
     <section className="mx-auto max-w-4xl px-4 space-y-20 pb-8">
+      {/* Concept overview */}
+      <div id="the-app" className="space-y-6">
+        <h2 className="text-2xl font-bold text-center">The App</h2>
+        <p className="max-w-3xl mx-auto text-muted-foreground text-center">
+          Two peers meet on a video call. One participates; the other
+          facilitates using gentle, IFS-inspired prompts. A silent AI agent listens
+          only to the participant and streams helpful questions to the facilitator's
+          coach panel—keeping the human connection front and centre.
+        </p>
+        <ul className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 max-w-4xl mx-auto w-full">
+          <li className="rounded-md bg-card p-6 flex flex-col items-center text-center">
+            <Image
+              src="/assets/1.jpg"
+              alt="Real face-to-face presence"
+              width={300}
+              height={200}
+              className="mb-4 rounded-md object-cover w-full h-48"
+            />
+            <p className="text-sm font-medium text-muted-foreground">
+              Real, face-to-face presence — no chatbot monologues.
+            </p>
+          </li>
+          <li className="rounded-md bg-card p-6 flex flex-col items-center text-center">
+            <Image
+              src="/assets/2.jpg"
+              alt="AI supporting facilitator backstage"
+              width={300}
+              height={200}
+              className="mb-4 rounded-md object-cover w-full h-48"
+            />
+            <p className="text-sm font-medium text-muted-foreground">
+              AI stays backstage, offering prompts so the facilitator can stay present.
+            </p>
+          </li>
+          <li className="rounded-md bg-card p-6 flex flex-col items-center text-center">
+            <Image
+              src="/assets/3.jpg"
+              alt="Role-swap model for equal giving and receiving"
+              width={300}
+              height={200}
+              className="mb-4 rounded-md object-cover w-full h-48"
+            />
+            <p className="text-sm font-medium text-muted-foreground">
+              Role-swap model: everyone gives as much as they receive.
+            </p>
+          </li>
+        </ul>
+      </div>
+
       {/* Why Section */}
       <div id="why-no-bad" className="grid md:grid-cols-2 gap-10 items-center">
         <Image
@@ -45,28 +94,6 @@ export default function LandingSections() {
           height={300}
           className="rounded-md shadow"
         />
-      </div>
-
-      {/* Concept overview */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-center">How It All Fits Together</h2>
-        <p className="max-w-3xl mx-auto text-muted-foreground text-center">
-          Two peers meet in a private video room. One explores; the other
-          facilitates using gentle, IFS-inspired prompts. A silent AI agent listens
-          only to the explorer and streams helpful questions to the facilitator's
-          coach panel—keeping the human connection front and centre.
-        </p>
-        <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 max-w-3xl mx-auto w-full">
-          <li className="rounded-md border bg-card p-4 text-sm font-medium text-muted-foreground">
-            Real, face-to-face presence — no chatbot monologues.
-          </li>
-          <li className="rounded-md border bg-card p-4 text-sm font-medium text-muted-foreground">
-            AI stays backstage, offering prompts so the facilitator can stay present.
-          </li>
-          <li className="rounded-md border bg-card p-4 text-sm font-medium text-muted-foreground">
-            Role-swap model: everyone gives as much as they receive.
-          </li>
-        </ul>
       </div>
 
       {/* How it works */}

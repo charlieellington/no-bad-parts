@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import WaitlistJoinButton from "@/components/waitlist-join-button";
 
 export default async function FounderIntro() {
   return (
@@ -15,9 +14,8 @@ export default async function FounderIntro() {
           Please sign up to the waitlist to try a session or stay updated by email.
         </p>
         <div className="flex items-center gap-4 mt-6">
-          <WaitlistJoinButton className="mt-0" />
           <Link
-            href="#why-no-bad"
+            href="#the-app"
             className="inline-flex items-center justify-center rounded-md border px-6 py-3 font-medium text-foreground hover:bg-muted transition-colors"
           >
             More info
