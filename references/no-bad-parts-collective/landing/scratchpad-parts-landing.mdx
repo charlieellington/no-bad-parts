@@ -1,0 +1,397 @@
+---
+title: "Scratchpad - Parts Landing"
+---
+
+# Scratchpad - Parts Landing
+
+## Current Project Status - January 21, 2025
+
+✅ **COMPLETED: Project Renaming - no-bad-parts-landing → no-bad-parts**
+
+### What was implemented:
+- Successfully renamed entire project from "no-bad-parts-landing" to "no-bad-parts"
+- GitHub repository renamed from `charlieellington/no-bad-parts-landing` to `charlieellington/no-bad-parts`
+- Local directory renamed from `/Users/charlieellington1/coding/no-bad-parts-landing` to `/Users/charlieellington1/coding/no-bad-parts`
+- Git remote URLs automatically updated to point to new repository name
+- Project now positioned as main application rather than just landing page
+
+### Technical details:
+- Used GitHub CLI (`gh repo rename no-bad-parts`) for seamless repository renaming
+- All git operations verified working correctly after rename
+- No code changes required - no internal references to old name found
+- Working tree clean and up to date with origin/main
+
+### Strategic positioning:
+- Project name now reflects its evolution from landing page to full application
+- Cleaner, more professional naming for main product
+- Ready for expansion beyond initial landing page functionality
+
+## Current Project Status - December 10, 2024
+
+✅ **COMPLETED: Energy Flow Docs - Default Collapsed Folders**
+
+### What was implemented:
+- Set all folders in the energy-flow docs sidebar to be collapsed by default when users first land
+- Added `defaultMenuCollapseLevel: 1` to the sidebar configuration in `theme.config.tsx`
+- Improves initial user experience by providing a cleaner, less overwhelming sidebar view
+- Users can still expand folders as needed by clicking on them
+
+### Technical details:
+- Updated `energy-flow/theme.config.tsx` sidebar configuration
+- Used Nextra's built-in `defaultMenuCollapseLevel` setting
+- When set to 1, every folder will be collapsed by default (vs default level 2)
+- Setting to Infinity would expand all folders; setting to 1 collapses all
+- Changes will be visible immediately when the docs are viewed
+
+✅ **COMPLETED: Conditional Premium CTA for Completed Users**
+
+### What was implemented:
+- Added premium CTA banner at top of page for users who completed profile setup
+- Shows for logged-in users who have both avatar_url and note (uploaded image + reason)
+- Banner includes celebration messaging and prominent "Get Instant Access" button
+- Created conditional wrapper to hide bottom premium CTA for completed users (avoid duplication)
+- Maintains bottom CTA for incomplete users and non-logged-in users
+
+### Technical details:
+- Created `premium-cta-banner.tsx` with SWR profile data fetching
+- Created `conditional-bottom-premium-cta.tsx` wrapper component  
+- Updated `app/page.tsx` to include banner after ProfileCompletion for logged-in users
+- Used gradient styling and responsive design for banner
+- Smart conditional logic prevents duplicate premium offers
+- Fallback-safe: shows CTA if profile data unavailable
+
+### User Experience:
+- Incomplete users: normal flow + bottom CTA
+- Completed users: celebration banner at top + hidden bottom CTA  
+- Progressive enhancement from completion → premium upgrade
+- Changes visible immediately on localhost:3000
+
+---
+
+✅ **COMPLETED: Premium CTA Section - Added Stripe Payment Option**
+
+### What was implemented:
+- Added new premium call-to-action section underneath the final "Sign up for early access" section
+- Text: "Really excited? Join for €100 for a years access and try a session straight away."
+- "Buy Now" button linking to Stripe checkout: https://buy.stripe.com/dRm7szbWRex59bC88gdZ60n
+- Explanatory text about Stripe → cal.com booking flow
+- No border design (bg-card only) as requested
+- Added to both logged-in and non-logged-in user flows
+
+### Technical details:
+- Updated `no-bad-parts-landing/app/page.tsx` for both user states
+- External link with target="_blank" and proper security attributes
+- Primary button styling for prominence
+- Centered layout with proper spacing (py-8, p-8, space-y-4)
+- Creates dual conversion funnel: free waitlist OR premium instant access
+- Changes visible immediately on localhost:3000
+
+---
+
+✅ **COMPLETED: Feature Cards Enhancement - Added Lucide Icons and Removed Borders**
+
+### What was implemented:
+- Added appropriate Lucide icons above each feature card in the hero section
+- Calendar icon for "Book an IFS therapy session"
+- Users icon for "Receive a session from a member"
+- Heart icon for "Give back another session"  
+- Bot icon for "You're facilitated and guided by AI"
+- Removed borders from all feature cards for cleaner design
+- Centered content with flexbox layout for better visual hierarchy
+
+### Technical details:
+- Updated `no-bad-parts-landing/components/landing-hero.tsx`
+- Imported Calendar, Users, Heart, Bot icons from lucide-react (already installed v0.468.0)
+- Created getFeatureIcon() function for dynamic icon mapping
+- Icons styled with w-6 h-6 mb-3 text-primary classes
+- Removed border class and added flex flex-col items-center text-center
+- Changes visible immediately on localhost:3000
+
+---
+
+✅ **COMPLETED: Waitlist Button Repositioning**
+
+### What was implemented:
+- Removed "Join wait-list" button from the founder intro section (Hi I'm Charlie)
+- Added "Join wait-list" button underneath all waitlist sections for better user flow
+- Button now appears after users see the waitlist, encouraging them to join
+- Updated "More info" button in Charlie section to link to #the-app instead of #why-no-bad
+- Applied changes to all user states (logged-in/out, with/without env vars)
+
+### Technical details:
+- Updated `no-bad-parts-landing/components/founder-intro.tsx` to remove WaitlistJoinButton
+- Updated `no-bad-parts-landing/app/page.tsx` to add centered buttons after each waitlist component
+- Consistent styling: `<div className="flex justify-center mt-8"><WaitlistJoinButton /></div>`
+- Improved user experience: users see waitlist → prompted to join immediately
+- Changes visible immediately on localhost:3000
+
+---
+
+✅ **COMPLETED: Hero Subtitle Text Update**
+
+### What was implemented:
+- Updated hero subtitle text to better describe the offering
+- Changed from: "A peer-led space to explore Internal Family Systems — join our closed-alpha wait-list and shape the journey."
+- To: "A peer-led space and application to explore Internal Family Systems — join our closed-alpha wait-list to try a session and shape the journey."
+- Added "and application" to clarify this is a digital platform
+- Added "to try a session" to clarify what users get when joining the waitlist
+
+### Technical details:
+- Updated `no-bad-parts-landing/content.json` heroSubtitle field
+- Changes visible immediately on localhost:3000
+- Better communicates the value proposition and what users can expect
+
+---
+
+✅ **COMPLETED: Header Spacing Optimization**
+
+### What was implemented:
+- Reduced spacing between subtitle text and CTA buttons in header
+- Changed margin-top from mt-8 to mt-4 on the CTA buttons container
+- Creates tighter visual connection between subtitle and call-to-action
+- Updated "More info" button to link to #the-app section instead of #why-no-bad
+- Added id="the-app" to "The App" section for proper anchor linking
+
+### Technical details:
+- Updated `no-bad-parts-landing/components/landing-hero.tsx` for spacing reduction
+- Updated `no-bad-parts-landing/components/landing-sections.tsx` to add anchor ID
+- Improved user flow with better button targeting
+- Changes visible immediately on localhost:3000
+
+---
+
+✅ **COMPLETED: Header CTA Button Repositioning**
+
+### What was implemented:
+- Moved call-to-action buttons above the hero images in the header section
+- New header flow: Title → Subtitle → CTA Buttons → Hero Images → Feature Cards
+- Improves user experience by allowing immediate action after reading the concept
+- Maintains all existing styling and responsiveness
+
+### Technical details:
+- Updated `no-bad-parts-landing/components/landing-hero.tsx`
+- Moved the CTA buttons div above the hero images div
+- No changes to button styling or functionality
+- Changes visible immediately on localhost:3000
+
+---
+
+✅ **COMPLETED: Image Size Enhancement and Card Border Removal**
+
+### What was implemented:
+- **App Section**: Removed card borders and increased image sizes
+  - Removed `border` class from all three feature cards for cleaner look
+  - Increased image dimensions from 200x150 to 300x200
+  - Increased image height from h-32 to h-48 for more visual impact
+- **Header Section**: Increased image sizes on desktop
+  - Increased container max-width from max-w-2xl to max-w-3xl
+  - Increased image dimensions from 300x200 to 400x300
+  - Maintained responsive design for mobile compatibility
+
+### Technical details:
+- Updated `no-bad-parts-landing/components/landing-sections.tsx` for app section
+- Updated `no-bad-parts-landing/components/landing-hero.tsx` for header section
+- All changes maintain responsive design across devices
+- Changes visible immediately on localhost:3000
+
+---
+
+✅ **COMPLETED: Hero Images Styling Update - Removed Cropping and Shadow**
+
+### What was implemented:
+- Removed cropping (object-cover) from hero images in header section
+- Removed shadow effects (shadow-md) from facilitator and participant images
+- Removed rounded corners (rounded-lg) and fixed height (h-48)
+- Images now display in their natural aspect ratio without any styling effects
+- Maintained responsive width (w-full) for proper scaling across devices
+
+### Technical details:
+- Updated `no-bad-parts-landing/components/landing-hero.tsx`
+- Simplified image className to only include `w-full`
+- Images now show completely without cropping or visual effects
+- Changes visible immediately on localhost:3000
+
+---
+
+✅ **COMPLETED: App Section Enhancement - Added Feature Images**
+
+### What was implemented:
+- Added images above each of the three feature cards in "The App" section
+- 1.jpg above "Real, face-to-face presence — no chatbot monologues"
+- 2.jpg above "AI stays backstage, offering prompts so the facilitator can stay present"
+- 3.jpg above "Role-swap model: everyone gives as much as they receive"
+- Enhanced card layout from simple text to image+text format
+- Maintained full responsiveness: single column on mobile, 2 columns on small screens, 3 columns on medium+
+
+### Technical details:
+- Updated `no-bad-parts-landing/components/landing-sections.tsx`
+- Used flexbox layout with center alignment for each card
+- Images sized consistently (w-full h-32) with object-cover
+- Increased padding and spacing for better visual hierarchy
+- All images optimized with Next.js Image component and proper alt text
+
+---
+
+✅ **COMPLETED: Header Enhancement - Added Hero Images and CTA Buttons**
+
+### What was implemented:
+- Added two responsive hero images (facilitator.jpg and partcipant.jpg) to the header section
+- Images display side by side on desktop, stacked vertically on mobile
+- Added call-to-action button section below images with "Join the wait-list" and "More info" buttons
+- Updated `no-bad-parts-landing/components/landing-hero.tsx` with proper responsive design
+- Used Next.js Image component for optimization with proper alt text and dimensions
+- "More info" button scrolls to the "Why No Bad Parts" section using anchor link
+
+### Technical details:
+- Responsive grid layout: `grid-cols-1 md:grid-cols-2` for images
+- Button layout: `flex-col sm:flex-row` for responsive stacking
+- Consistent styling with existing design system using Tailwind classes
+- Images are 300x200 with object-cover and rounded corners with shadows
+- Changes visible immediately on localhost:3000
+
+---
+
+✅ **COMPLETED: Section Reordering - "How It All Fits Together" moved above "Why No Bad Parts"**
+
+### What was implemented:
+- Successfully moved the "How It All Fits Together" section to be the first section on the landing page
+- This section now appears above the "Why 'No Bad Parts'?" section as requested
+- Updated `no-bad-parts-landing/components/landing-sections.tsx` to reorder the sections
+- New section order: 1) How It All Fits Together, 2) Why "No Bad Parts"?, 3) A Simple & Accessible Collective, 4) How It Works, 5) Our Ethos
+
+### Technical details:
+- Used search and replace to move the entire "Concept overview" section block
+- Maintained all existing styling and content
+- Changes visible immediately on the running dev server at localhost:3000
+
+---
+
+✅ **COMPLETED: Chatway Chat Widget Integration**
+
+### What was implemented:
+- Successfully integrated Chatway chat widget into no-bad-parts-landing project
+- Added Chatway script to `app/layout.tsx` for proper Next.js App Router compatibility
+- Removed duplicate script from `app/head.tsx` to prevent conflicts
+- Deleted unused `pages/_document.tsx` file (App Router doesn't use Pages Router patterns)
+- Widget loads site-wide with ID `6qxBzuIMeu2h` (same as energy-flow project)
+
+### Technical details:
+- Fixed App Router vs Pages Router script injection pattern
+- Script properly injected in `<head>` section using standard `<script>` tag (not Next.js `Script` component per Chatway integration guide)
+- Cleared `.next` cache to prevent refresh loops
+- Tested locally on http://localhost:3000 - widget loads and appears correctly
+
+### Deployment:
+- Committed changes with descriptive message: "feat: integrate Chatway chat widget for Next.js App Router"
+- Successfully pushed to remote repository
+- Widget should now be live on production site for customer support
+
+---
+
+## Previous Project Status - December 6, 2024
+
+✅ **COMPLETED: YouTube Video Embedding for 07-Videos Page**
+
+### What was implemented:
+- Created new "07-Videos" page at `energy-flow/pages/07-Videos/index.mdx`
+- Built custom remark plugin to automatically convert YouTube URLs to embedded iframes
+- Fixed compilation issues by using proper JSX node types in the remark pipeline
+- Successfully tested YouTube embedding with `https://www.youtube.com/watch?v=vN_EszJ-MHM`
+
+### Technical details:
+- Plugin detects bare YouTube URLs in markdown paragraphs
+- Supports both `youtube.com/watch?v=` and `youtu.be/` formats
+- Converts to responsive iframe with proper attributes
+- Uses JSX node type for MDX compatibility
+
+### Usage:
+Simply paste YouTube links on their own lines in the MDX file and they automatically become embedded videos when the site builds.
+
+---
+
+*Previous project notes continue below...*
+
+## Project Status Board
+
+### Planner Notes
+
+---
+
+## Background & Motivation (Planner)
+We want the public "No Bad Parts Collective" landing page to match the copy, tone, and imagery on the current Notion "COMING SOON" page while driving sign-ups to the existing wait-list API. The page must also inform visitors that:
+1. Development is in progress and we'll invite a closed-alpha cohort soon.
+2. Live build updates are visible at **energyflow.studio**.
+
+## Key Challenges
+(none)
+
+## High-level Task Breakdown
+
+### Must Have 
+- [x] 1️⃣ **Content Harvest**
+  - Pull final copy from Notion page (added to `content/nbpc-copy.md`).
+  - Verify required images already exist in `/public/assets` (rename/move to `/public/assets/nbpc/` if tidy-up is needed).
+- [x] 2️⃣ **Component & Layout Updates** (reordered hero → founder → waitlist → sections)
+  - Update `app/page.tsx` (or relevant file) with new headline, sub-headline, body paragraphs.
+  - Add "Closed Alpha" strip + link to energyflow.studio.
+  - Duplicate the wait-list CTA button in the hero **and** near page footer.
+- [x] 3️⃣ **SEO & Metadata**
+  - Edit `<Head>` block: `title`, `meta description`, `og:title`, `og:description`, `og:image`, `twitter:card`, canonical.
+- [x] 4️⃣ **Image Optimisation**
+  - Verified all landing page images use `next/image` with explicit `width`/`height` and `alt` props (see `founder-intro.tsx`, `landing-sections.tsx`).
+  - Hero & CTA sections contain no images requiring optimisation.
+  - Avatar component intentionally retains native `<img>` for tiny icons;
+    ESLint rule disabled to avoid next/image overhead.
+- [x] 5️⃣ **Responsive QA** across break-points (mobile first).
+- [x] 6️⃣ **Smoke Test**
+  - Hit `/api/waitlist` submit path locally and verified success + toast.
+- [x] 7️⃣ **Commit & Push**
+  - PR title: "feat(landing): update copy/images + SEO for NBPC".
+  - Updated screenshot and branding in README.
+
+### Should Have 
+(none right now)
+
+### Could Have 
+
+- [ ] 9️⃣ **Buy Now Feature**
+  - Feature to be able to move up the waitlist 
+  - "buying an annual membership for €100, refundable anytime before launch or before your second call."
+
+### Won't Have (This Time)
+(none)
+
+
+## Success Criteria
+(none)
+
+## 2025-05-30 Updates
+- Converted concept bullet list into card layout (matches header feature cards) in `no-bad-parts-landing/components/landing-sections.tsx`.
+- Replaced "How It Works" ordered list with image cards and new copy.
+- Converted Our Ethos bullet list into card layout.
+- Added feasibility assessment for contact form emailing charliee@gmail.com (see task 8️⃣).
+- Added implementation plan for contact form leveraging existing Resend setup; form limited to logged-in users and positioned top & bottom of page with new copy.
+- Implemented comprehensive SEO metadata in `no-bad-parts-landing/app/layout.tsx` (title, description, OG/Twitter images, canonical).
+- Completed responsive QA and smoke test locally; updated README.
+- [2025-05-30] Replaced default favicon with rainbow emoji by adding `app/icon.svg` and updating `icons` metadata in `no-bad-parts-landing/app/layout.tsx`.
+- [2025-05-30] Added gradient divider lines before and after the waitlist section in `no-bad-parts-landing/app/page.tsx` for clearer visual separation, matching the hero section style.
+- [2025-05-30] Ran local ESLint and Next.js production builds for **energy-flow** and **no-bad-parts-landing**; both succeeded with zero warnings or errors.
+
+- [2024-06-10] Updated the footer in no-bad-parts-landing/app/layout.tsx to only say: 'Made with ❤️ by Charlie Ellington at Energy Flow Studio.'
+
+- [2024-01-02] Added `/videos` redirect to `/07-Videos` in energy-flow/next.config.mjs to provide user-friendly URL for accessing the video library page.
+
+## 2025-06-xx Avatar Upload Flow Decision
+
+- **Decision:** Retain the current avatar-upload step _after_ the user completes the magic-link sign-in ("Option 1" from chat).
+- **Rationale:**
+  - Re-uses the proven `upload-avatar.ts` helper and `avatars` storage bucket.
+  - Avoids anonymous uploads/policy changes while the visitor is unauthenticated.
+  - Keeps the wait-list modal lightweight (higher conversion rate).
+- **Action Items (when capacity allows):**
+  1. Update copy on the post-sign-up profile card to explicitly invite the user to add a photo (currently implicit).
+  2. Add a subtle reminder toast if the user dismisses the card without uploading an avatar.
+  3. Review clean-up cron for orphaned avatar files (users who never verify) — low priority.
+- **No immediate code changes required**; existing flow already satisfies the decision.
+
+---

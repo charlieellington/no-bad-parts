@@ -1,25 +1,14 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
-Always follow the rules set out in [CONTRIBUTING.md](mdc:energy-flow/energy-flow/energy-flow/energy-flow/pages/02-developer-docs/CONTRIBUTING.md) and, after every action, update [scratchpad.md](mdc:energy-flow/energy-flow/energy-flow/no-bad-parts/scratchpad.md) the current project status. Check [build-plan.mdx](mdc:energy-flow/energy-flow/energy-flow/energy-flow/pages/03-projects/no-bad-parts-collective/build-plan.mdx) for context of the project. 
+Always follow the rules set out in [CONTRIBUTING.md](mdc:Users/charlieellington1/coding/energy-flow/pages/02-developer-docs/CONTRIBUTING.md), after every action, update references/no-bad-parts-collective/scratchpad-nobad.md the current project status. Check references/no-bad-parts-collective/build-plan.mdx for context of the project. 
 
 In building the app, use only Tailwind CSS classes and components sourced from **shadcn/ui**. Do NOT author bespoke CSS files or React components purely for styling unless absolutely necessary—and in that case, warn the user before proceeding.
 
-## 🔒 API Key & Secret Security Rules
+Never commit API keys, secrets, or tokens (see CONTRIBUTING.md section 5 for full security rules). 
 
-**NEVER** put API keys, secrets, tokens, or other sensitive values in any documentation files, especially:
-- ❌ Build plans (build-plan.mdx)
-- ❌ README files  
-- ❌ Tutorial documentation
-- ❌ Commit messages
-- ❌ Code examples in docs
+Always make sure you're updating the correct folder and application as we're often working in a two folder structure. For example, if editing or working on No Bad Parts update "no-bad-parts" - only documentation updates go into "energy-flow". 
 
-**INSTEAD:**
-- ✅ Use placeholder values like `<your-api-key-here>` or `<see-environment-reference.md>`
-- ✅ Store actual values in git-ignored files (like `environment-reference.md`)
-- ✅ Reference the secure file location in documentation
-- ✅ Always add sensitive files to `.gitignore` immediately
-
-**Before committing:** Always scan for patterns like `sk-`, `pk_`, `_KEY=`, API keys, or other secrets. 
+Also check this when starting a local development server to make sure the correct app is run. 

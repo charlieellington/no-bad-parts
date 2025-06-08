@@ -1,0 +1,142 @@
+---
+title: Run Silent Coach Agent from Source (Python)
+---
+
+# Switching from `livekit/agent-audio-llm` Docker image to a Python source agent
+
+The pre-built container has been withdrawn from Docker Hub / GHCR, so we now run the agent directly from LiveKit's **`livekit-agents`** SDK (v1.0).  This keeps everything transparent and avoids private-image auth.
+
+---
+
+## 0 — What you'll end up with
+
+| Folder | Purpose |
+|---|---|
+| `no-bad-parts/agent/` | Minimal Python project containing `agent.py` |
+| `.env` or `.agent.env` | Same four vars (`LIVEKIT_URL`, `PARTNER_ID`, `OPENAI_API_KEY`, `SYSTEM_PROMPT`), plus LiveKit API key/secret if you later deploy |
+| `venv/` | Local Python 3.11 virtualenv (ignored by Git) |
+
+You'll be able to:
+
+```bash
+cd no-bad-parts/agent
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python agent.py dev  # joins LiveKit room silently
+```
+
+---
+
+## 1 — One-time setup (≈ 5 min)
+
+1. **Create the agent folder**  (done by repo script – see below).
+2. **Install Python ≥ 3.9** (macOS: `brew install python@3.11`).
+3. **Create & activate a virtualenv**  
+   ```bash
+   cd no-bad-parts/agent
+   python -m venv venv
+   source venv/bin/activate
+   ```
+4. **Install packages**  
+   ```bash
+   pip install "livekit-agents[openai,silero,deepgram,cartesia,turn-detector]~=1.0" \
+               "python-dotenv"
+   ```
+5. **Copy `.agent.env` → `.env`** inside `no-bad-parts/agent`  (the SDK loads `.env`).
+6. **Download model files once**  
+   ```bash
+   python agent.py download-files
+   ```
+
+---
+
+## 2 — `agent.py` (generated automatically)
+
+```python title="agent.py"
+from dotenv import load_dotenv
+from livekit import agents
+from livekit.agents import AgentSession, Agent, RoomInputOptions
+from livekit.plugins import openai, silero
+
+load_dotenv()
+
+PARTNER_ID = "partner"  # must match .env
+
+class SilentCoach(Agent):
+    def __init__(self) -> None:
+        super().__init__(instructions="You are Silent Coach – see SYSTEM_PROMPT env var.")
+
+async def entrypoint(ctx: agents.JobContext):
+    session = AgentSession(
+        stt=silero.VAD.load(),  # we only need VAD; Whisper runs in LiveKit backend
+        llm=openai.LLM(model="gpt-4o-mini"),
+        tts=None,  # coach stays silent
+        vad=silero.VAD.load(),
+    )
+
+    await session.start(
+        room=ctx.room,
+        agent=SilentCoach(),
+        room_input_options=RoomInputOptions(),
+    )
+
+    await ctx.connect()
+
+if __name__ == "__main__":
+    agents.cli.run_app(agents.WorkerOptions(entrypoint_fnc=entrypoint))
+```
+
+The code above is autowired by the script – just edit the model names if needed.
+
+---
+
+## 3 — Running locally
+
+```bash
+# inside virtualenv
+python agent.py dev   # joins LK room & streams hints to Facilitator data-track
+```
+
+Indicators in terminal:
+* `Connected to LiveKit server`  
+* `Joined room: no-bad-parts`  
+* `Listening to participant: partner`
+
+---
+
+## 4 — Deploying later (Fly.io)
+
+Replace the Docker image in §5 of _build-plan.mdx_ with:
+```bash
+fly launch --name no-bad-parts-agent --noworkspace \
+           --dockerfile agent.Dockerfile --region fra
+```
+…and create a tiny `agent.Dockerfile`:
+```Dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY agent/ /app
+RUN pip install --no-cache-dir -r requirements.txt
+CMD ["python","agent.py","start"]
+```
+All Fly secrets stay the same – we just pass them to the container.
+
+---
+
+## 5 — TL;DR dummy commands
+
+```bash
+# 1-liner to set up everything (from repo root)
+make agent-setup  # <— provided by scripts/add_agent.sh (already committed)
+
+# then to run:
+source no-bad-parts/agent/venv/bin/activate
+python no-bad-parts/agent/agent.py dev
+```
+
+If **any** command above fails, copy the error and ping Charlie.
+
+---
+
+_Last updated: Jan 2025_ 
