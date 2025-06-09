@@ -4,31 +4,30 @@ title: Scratchpad
 
 # Scratchpad
 
-## Project Status: No Bad Parts Collective - IFS Coaching Demo
+## Project Progress - No Bad Parts Collective
 
-### Completed Tasks
+### Step 1: Prepare Project Repository & Environment
 
-#### Step 1: UI Skeleton (✅ COMPLETED)
-- **Created session pages** using Next.js Pages Router:
-  - `pages/session/partner.tsx` - Daily iframe placeholder with username=partner
-  - `pages/session/facilitator.tsx` - Daily iframe + empty "Coach Hints" panel with username=facilitator
-- **Verified build** - Both pages compile successfully with zero props/state
-- **Layout implemented** - Facilitator page uses flex layout with video (left) and hints sidebar (right)
-- **Daily integration ready** - Both pages use environment variable for Daily URL with fallback
+#### ✅ UI Skeleton Completed
+- Created `pages/session/` directory (Pages Router)
+- Added `partner.tsx` - Simple Daily iframe placeholder with username=`partner`
+- Added `facilitator.tsx` - Daily iframe placeholder + empty "Coach Hints" panel with username=`facilitator`
+- Both files compile with zero props/state, front-end builds successfully
+- Ready for commit: "feat: add basic session pages"
 
-### Next Steps
-- Add agent skeleton (FastAPI server with health check and WebSocket endpoint)
-- Set up environment files (.env.local and agent/.env)
-- Remove any existing LiveKit dependencies
+#### Next: Agent Skeleton
+- Create `agent/` folder at repo root
+- Add `server.py` with FastAPI app exposing `GET /health` and `WS /ws`
+- Add `requirements.txt` with fastapi, uvicorn[standard], python-dotenv
+- Add `.env.example` with placeholder env vars
+- Add Makefile shortcut for `make agent-dev`
 
-### Current Project Structure
-- Frontend: Next.js with App Router (`app/`) and Pages Router (`pages/`)
-- Session routes: Using Pages Router for `/session/partner` and `/session/facilitator`
-- Styling: Tailwind CSS with shadcn/ui components
-- Environment: Development mode, local build successful
+### Current Status
+- **Frontend**: Session page skeletons ready for Daily integration
+- **Backend**: Not yet started
+- **Environment**: Pages Router structure established alongside existing App Router
 
-### Notes
-- Project builds successfully (✓ Compiled successfully in 7.0s)
-- Both session pages prerender as static content
-- Daily iframe permissions configured for camera, microphone, fullscreen, display-capture
-
+### Architecture Notes
+- Using hybrid Next.js routing: App Router for main site, Pages Router for session pages
+- Following build plan from references/buildplan_parts/step-1.md
+- Preparing for Daily.co integration (Step 2) and Pipecat agent (Step 4)
