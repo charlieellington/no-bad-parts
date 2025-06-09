@@ -43,3 +43,11 @@ next-env.d.ts
 
 # Supabase CLI local config (contains project ref; do not commit)
 supabase/config.toml
+
+# ──────────────────────────────
+# Python virtual-environment dirs
+# ──────────────────────────────
+agent/venv/
+agent/.venv/
+venv/
+.venv/
