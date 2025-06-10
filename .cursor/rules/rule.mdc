@@ -3,6 +3,8 @@ description:
 globs: 
 alwaysApply: true
 ---
-Always follow the rules set out in [CONTRIBUTING.md](mdc:energy-flow/pages/02-developer-docs/CONTRIBUTING.md) and, after every action, update [scratchpad-parts-landing.md](mdc:energy-flow/pages/03-projects/no-bad-parts-collective/landing/scratchpad-parts-landing.md) the current project status. 
+Always follow the rules set out in [CONTRIBUTING.md](mdc:references/CONTRIBUTING.md) and, 
+after every action, update [scratchpad.md](mdc:references/scratchpad.md) with the urrent project status. 
 
 In building the landing page, use only Tailwind CSS classes and components sourced from **shadcn/ui**. Do NOT author bespoke CSS files or React components purely for styling unless absolutely necessary—and in that case, warn the user before proceeding. 
+

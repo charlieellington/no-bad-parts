@@ -1,0 +1,22 @@
+# Ignore Python virtual environments
+venv/
+.venv/
+venv_new/
+
+# Ignore Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# Ignore git and other VCS metadata
+.git/
+
+# Ignore local environment and config files
+.env
+.env.*
+
+# Ignore editor/project files
+.vscode/
+.idea/
+
+# Ignore test logs and artifacts
+*.log 

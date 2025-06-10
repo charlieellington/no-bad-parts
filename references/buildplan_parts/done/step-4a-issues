@@ -1,0 +1,276 @@
+# Step 4 Implementation Status and Issues
+
+## Current State
+
+We have partially completed Stage 2 of the Step 4 implementation. The bot successfully:
+- Connects to the Daily room
+- Loads VAD (Voice Activity Detection) with Silero
+- Receives audio frames from participants
+- Has all necessary dependencies installed
+
+However, we're stuck on getting transcriptions to work properly.
+
+## Code Written and Implemented
+
+### 1. Environment Setup (✅ Complete)
+
+**Dependencies installed:**
+```
+pipecat-ai[daily,openai,silero]==0.0.69
+python-dotenv
+fastapi
+uvicorn
+```
+
+**Environment variables configured in `.env`:**
+- `DAILY_ROOM_URL` - Set and working
+- `DAILY_TOKEN` - Optional, not used for public rooms
+- `DAILY_API_KEY` - Set and working
+- `OPENAI_API_KEY` - Set
+- `SYSTEM_PROMPT` - Set for future use
+
+### 2. Current Bot Implementation (`agent/bot.py`)
+
+```python
+import os
+import asyncio
+from dotenv import load_dotenv
+from pipecat.transports.services.daily import DailyTransport, DailyParams
+from pipecat.pipeline.pipeline import Pipeline
+from pipecat.pipeline.task import PipelineTask
+from pipecat.pipeline.runner import PipelineRunner
+from pipecat.services.openai.stt import OpenAISTTService
+from pipecat.audio.vad.silero import SileroVADAnalyzer
+from pipecat.frames.frames import TranscriptionFrame, Frame
+from pipecat.processors.frame_processor import FrameProcessor, FrameDirection
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
+load_dotenv()
+
+class DebugFrameLogger(FrameProcessor):
+    """Custom frame logger that logs all frames and handles transcriptions"""
+    
+    def __init__(self):
+        super().__init__()
+        self._started = False
+        self.frame_count = {}
+    
+    async def process_frame(self, frame, direction):
+        frame_type = type(frame).__name__
+        
+        # Count frame types
+        if frame_type not in self.frame_count:
+            self.frame_count[frame_type] = 0
+        self.frame_count[frame_type] += 1
+        
+        # Log specific frame types
+        if isinstance(frame, TranscriptionFrame):
+            participant = frame.participant or {}
+            user_name = participant.get("user_name", "unknown")
+            logger.info(f"🎤 Transcription from {user_name}: {frame.text}")
+            
+            if user_name == "partner":
+                logger.info(f"🎙️ PARTNER SAID: {frame.text}")
+            elif user_name == "facilitator":
+                logger.info(f"🔇 Facilitator (ignored): {frame.text}")
+        
+        # Log frame counts every 100 frames
+        total_frames = sum(self.frame_count.values())
+        if total_frames % 100 == 0:
+            logger.info(f"Frame counts: {self.frame_count}")
+        
+        # Always pass the frame along
+        await self.push_frame(frame, direction)
+
+async def run_bot():
+    """Main bot pipeline function - Stage 2: Add STT"""
+    
+    logger.info("Setting up bot...")
+    
+    # Set up Daily transport (bot joins the Daily room as a silent participant)
+    transport = DailyTransport(
+        room_url=os.getenv("DAILY_ROOM_URL"),
+        token=os.getenv("DAILY_TOKEN") or None,
+        bot_name="ai-coach",
+        params=DailyParams(
+            audio_in_enabled=True, 
+            audio_out_enabled=False,
+            vad_analyzer=SileroVADAnalyzer()  # Add VAD analyzer!
+        )
+    )
+    
+    # Add event handler to log participant info
+    @transport.event_handler("on_participant_joined")
+    async def on_participant_joined(transport, participant):
+        logger.info(f"👤 Participant joined: {participant.get('user_name', 'unknown')} (ID: {participant['id']})")
+    
+    # Add event handler for participant updates (might have username)
+    @transport.event_handler("on_participant_updated") 
+    async def on_participant_updated(transport, participant):
+        logger.info(f"👤 Participant updated: {participant.get('user_name', 'unknown')} (ID: {participant['id']})")
+    
+    # Add Whisper STT service
+    stt = OpenAISTTService(
+        model="whisper-1",
+        api_key=os.getenv("OPENAI_API_KEY")
+    )
+    
+    # Create custom debug logger
+    debug_logger = DebugFrameLogger()
+    
+    # Build pipeline with STT
+    pipeline = Pipeline([
+        transport.input(),
+        stt,
+        debug_logger,  # Use our custom debug logger
+        transport.output()
+    ])
+    
+    # Create the pipeline task
+    task = PipelineTask(pipeline)
+    
+    logger.info("Bot starting with STT enabled...")
+    logger.info("Waiting for speech from 'partner' user...")
+    logger.info("Make sure to speak clearly into your microphone!")
+    
+    # Run the pipeline
+    runner = PipelineRunner()
+    
+    try:
+        await runner.run(task)
+    except Exception as e:
+        logger.error(f"Pipeline error: {e}")
+        raise
+
+if __name__ == "__main__":
+    asyncio.run(run_bot())
+```
+
+## The Main Issue
+
+### Problem Description
+When using custom FrameProcessor classes, we get constant errors:
+```
+ERROR - TranscriptionLogger#0 Trying to process UserAudioRawFrame#XXXX but StartFrame not received yet
+```
+
+This happens even though:
+1. StartFrame IS being generated by the pipeline (we can see it with built-in FrameLogger)
+2. Audio frames are flowing through the system
+3. VAD is loaded and configured correctly
+
+### Root Cause
+The custom FrameProcessor isn't receiving the StartFrame before it starts processing audio frames. This appears to be a timing/initialization issue in Pipecat 0.0.69.
+
+## Attempts to Fix
+
+### 1. Direct Frame Iteration (Failed)
+```python
+async for frame in task:
+    if isinstance(frame, TranscriptionFrame):
+        # Process transcription
+```
+**Result:** `PipelineTask` is not iterable in Pipecat 0.0.69
+
+### 2. Task Event Handlers (Failed)
+```python
+@task.event_handler("on_frame")
+async def on_frame(frame: Frame):
+    # Process frame
+```
+**Result:** Warning "Event handler on_frame not registered" - not supported
+
+### 3. Pipeline Event Handlers (Failed)
+```python
+@pipeline.event_handler("on_downstream_frame")
+async def handle_frame(frame):
+    # Process frame
+```
+**Result:** Method doesn't exist on Pipeline object
+
+### 4. Custom FrameProcessor (Partially Works)
+- Works when no StartFrame initialization check
+- Fails with "StartFrame not received yet" when proper FrameProcessor is used
+- Built-in FrameLogger works fine, suggesting issue with custom processors
+
+### 5. Simplified FrameLogger (Works but Limited)
+```python
+frame_logger = FrameLogger()
+```
+**Result:** Works and shows StartFrame, but can't filter by participant or process transcriptions
+
+## Current Status
+
+### What Works
+- ✅ Bot connects to Daily room as "ai-coach"
+- ✅ VAD (Silero) loads and initializes
+- ✅ Audio frames are received from participants
+- ✅ Pipeline runs with built-in components
+- ✅ StartFrame is generated in the pipeline
+
+### What Doesn't Work
+- ❌ Custom FrameProcessor classes can't initialize properly
+- ❌ No way to capture and process TranscriptionFrame objects
+- ❌ Participant usernames show as "unknown" instead of "partner"/"facilitator"
+- ❌ Can't verify if STT is actually producing transcriptions
+
+### What We Need to Fix
+1. Find a way to capture TranscriptionFrame objects without custom FrameProcessors
+2. OR fix the StartFrame initialization issue with custom processors
+3. Debug why participant usernames aren't coming through
+4. Verify STT is actually working (need someone to speak during testing)
+
+## Additional Relevant Information
+
+### Pipecat Version Mismatch
+The documentation references Pipecat 0.3.x but we're using 0.0.69. This version difference means:
+- Different import paths (we fixed these)
+- Different API methods
+- Possible bugs or missing features in 0.0.69
+
+### Deprecated Parameters
+We encountered deprecated parameters that were updated:
+- `vad_enabled` → use `audio_in_enabled` with `vad_analyzer`
+- `vad_audio_passthrough` → now always enabled
+
+### Missing Examples
+No working examples found for Pipecat 0.0.69 that show:
+- How to properly capture frames from a pipeline
+- How to create custom frame processors that work with StartFrame
+- How to filter transcriptions by participant
+
+### Next Steps to Try
+1. **Try older Pipecat approach**: Look for examples using frame callbacks or sinks
+2. **Check Pipecat source**: Understand how FrameLogger avoids the StartFrame issue
+3. **Use transport callbacks**: Maybe DailyTransport has direct STT callbacks
+4. **Upgrade Pipecat**: Consider if 0.0.69 is too old/buggy and upgrade is needed
+5. **Simpler architecture**: Maybe process frames outside the pipeline entirely
+
+## Testing Setup
+- FastAPI server: http://localhost:8000
+- Partner page: http://localhost:3000/session/partner  
+- Facilitator page: http://localhost:3000/session/facilitator
+- Bot runs with: `python3.11 bot.py`
+
+## Key Debugging Commands
+```bash
+# Run bot
+cd agent && python3.11 bot.py
+
+# Check if bot joins room
+# Look for "ai-coach" in participant list
+
+# Test speech
+# Speak as "partner" user and check logs
+```
+
+## Summary
+We're stuck at Stage 2 of Step 4. The core issue is that we can't properly capture and process transcription frames due to what appears to be a bug or limitation in Pipecat 0.0.69's frame processor initialization. We need to either find a workaround or consider upgrading to a newer version of Pipecat that might have this issue resolved.
