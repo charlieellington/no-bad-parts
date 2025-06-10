@@ -55,7 +55,7 @@ export default function StartPage() {
               <Button variant="secondary" size="lg">Partner Call Start</Button>
             </Link>
           </div>
-          <p className="text-xs text-muted-foreground mt-4">This product is in alpha testing; there will be bugs. Please tell us about them!</p>
+          <p className="text-xs text-muted-foreground mt-4">This product is in alpha testing; there will be bugs. <a href="mailto:charliee@gmail.com" className="underline">Please tell us about them!</a></p>
         </section>
 
         {/* Quick Start Guide */}
@@ -100,7 +100,7 @@ export default function StartPage() {
               Human-to-human connection stays front and centre—the AI is just a backstage helper.
             </li>
             <li>
-              Try mute / unmute, screen-share, or mobile. Audio is processed securely via OpenAI and nothing is stored.
+              Try mute / unmute, talking different things, or mobile. Audio is processed securely via OpenAI and nothing is stored.
             </li>
           </ul>
         </section>
