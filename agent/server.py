@@ -63,8 +63,13 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting AI coach bot as background task...")
     
-    # Import bot module via absolute path so it works regardless of cwd
-    from agent.bot import run_bot
+    # Import bot module. When running from project root (monorepo), the module is
+    # available as `agent.bot`. Inside the Docker image (which copies *contents*
+    # of the agent/ dir to /app), it is just `bot`.
+    try:
+        from agent.bot import run_bot  # type: ignore
+    except ModuleNotFoundError:
+        from bot import run_bot  # type: ignore
     
     # Create background task for the bot with broadcast function
     asyncio.create_task(run_bot(broadcast_hint))
