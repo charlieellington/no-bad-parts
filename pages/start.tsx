@@ -55,6 +55,7 @@ export default function StartPage() {
               <Button variant="secondary" size="lg">Partner Call Start</Button>
             </Link>
           </div>
+          <p className="text-xs text-muted-foreground mt-4">This product is in alpha testing; there will be bugs. Please tell us about them!</p>
         </section>
 
         {/* Quick Start Guide */}
