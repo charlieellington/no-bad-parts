@@ -256,7 +256,7 @@ Tip: After you ask a question from a hint, give the participant space to respond
             )}
             <Button
               size="sm"
-              variant="secondary"
+              variant="default"
               disabled={!isWsConnected}
               onClick={async () => {
                 if (!isWsConnected) return;
@@ -269,7 +269,7 @@ Tip: After you ask a question from a hint, give the participant space to respond
             >
               ♻️ Generate Hint
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => {setGuideStep('question'); setFacilitatorGuideOpen(false);}}>
+            <Button size="sm" variant="outline" onClick={() => {setGuideStep('question'); setFacilitatorGuideOpen(false);}}>
               Start Script
             </Button>
             <Button size="sm" variant="outline" onClick={() => {
@@ -336,7 +336,7 @@ Tip: After you ask a question from a hint, give the participant space to respond
             )}
             <Button
               size="sm"
-              variant="secondary"
+              variant="default"
               disabled={!isWsConnected}
               onClick={async () => {
                 if (!isWsConnected) return;
@@ -349,10 +349,10 @@ Tip: After you ask a question from a hint, give the participant space to respond
             >
               ♻️ Generate Hint
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => {setGuideStep('question'); setFacilitatorGuideOpen(false);}}>
+            <Button size="sm" variant="outline" onClick={() => {setGuideStep('question'); setFacilitatorGuideOpen(false);}}>
               Start Script
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => {
+            <Button size="sm" variant="outline" onClick={() => {
               setFacilitatorGuideOpen(!facilitatorGuideOpen);
               setGuideStep('hidden');
             }}>
