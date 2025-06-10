@@ -537,4 +537,23 @@ The assistant now understands the complete flow of conversation, not just fragme
 
 - Added `.vercelignore` to exclude backend files from Vercel build.
 
+### Workspace Clean-up (2025-06-10)
+- Added `references/` directory to `.gitignore` to prevent committing large documentation assets.
+
+### 2025-06-10 — Docs Refresh & Cleanup Suggestions
+
+- Replaced outdated *Waitlist-Kit* README with a fresh project overview detailing LiveKit, the Python Agent, and setup steps.
+- Added up-to-date screenshots referencing `public/assets/facilitator.jpg` and `public/assets/partcipant.jpg`.
+- Proposed repository cleanup tasks:
+  1. **Remove committed virtual-envs** – delete `agent/venv/` and `agent/venv_new/`, ensure `**/venv*/` patterns are in `.gitignore`.
+  2. **Deprecate Supabase artefacts** – `supabase/` and wait-list auth pages are likely legacy; archive or delete if not used by the current LiveKit flow.
+  3. **Prune bulky assets** – audit `public/assets/` for images >500 KB and optimise or drop unused ones.
+  4. **Thin out docs** – move archival build-plan fragments from `references/` into the energy-flow knowledge base or delete.
+
+*(Awaiting team decision before running a sweeping removal PR.)*
+
+### 2025-06-10 – Documentation Update
+- README rewritten using build-plan summary & outcome
+- Added facilitator and partner screenshots to showcase views
+
 ---

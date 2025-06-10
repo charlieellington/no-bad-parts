@@ -6,20 +6,11 @@ This document outlines additional testing scenarios that are recommended but not
 **Priority Level**: Should Have (MOSCOW Method)
 **Prerequisites**: Complete Step 3 (WebSocket Implementation) with all 4 stages
 
-> **VERY IMPORTANT P0 (add first!)**
->
-> **Username → Participant Mapping Check**  
-> The bot must reliably obtain the expected `userName` ("partner" / "facilitator") from Daily so that future filters work. Until this is fixed, the pipeline should **transcribe everyone**.  
-> - Verify iframe URLs use `?userName=` (camel-case).  
-> - Confirm that `participant.info.userName` arrives with the expected value.  
-> - Add automated assertion in Stage-2 test to fail if username is still "unknown".  
-> - Fallback: log all speakers if username isn't supplied (current POC behaviour).
-
 ## Step 4 Optional Enhancements 🤖
 
 These items from Step 4 are functional but can be enhanced for production:
 
-### A. Participant Disconnect Handling 🚪
+### A. Participant Disconnect Handling 🚪 ([details](done/z-step-5-optional-details.md#participant-disconnect-handling-🚪))
 **Purpose**: Gracefully handle when partner leaves the call
 
 **Current State**: 
@@ -36,7 +27,7 @@ These items from Step 4 are functional but can be enhanced for production:
 - Optionally save session transcript
 - Clean up resources properly
 
-### B. Private Room Authentication 🔐
+### B. Private Room Authentication 🔐 ([details](done/z-step-5-optional-details.md#private-room-authentication-🔐))
 **Purpose**: Use secure Daily rooms with proper authentication
 
 **Current State**: Using public rooms with auto-generated tokens
@@ -48,7 +39,7 @@ These items from Step 4 are functional but can be enhanced for production:
 - Lock tokens to specific `room_name`
 - Store tokens securely (environment variables or secrets manager)
 
-### C. Session Management & Rejoining 🔄
+### C. Session Management & Rejoining 🔄 ([details](done/z-step-5-optional-details.md#session-management--rejoining-🔄))
 **Purpose**: Handle multiple sessions and reconnections gracefully
 
 **Current State**: One session per bot run
@@ -60,7 +51,7 @@ These items from Step 4 are functional but can be enhanced for production:
 - Support facilitator switching between multiple partners
 - Clean up old sessions properly
 
-### D. Hint Generation Rate Limiting ⏱️
+### D. Hint Generation Rate Limiting ⏱️ ([details](done/z-step-5-optional-details.md#hint-generation-rate-limiting-⏱️))
 **Purpose**: Prevent overwhelming facilitator with too many hints
 
 **Enhancement Ideas**:
@@ -69,7 +60,7 @@ These items from Step 4 are functional but can be enhanced for production:
 - Add "hint queue" with priority system
 - Allow facilitator to pause/resume hints
 
-### E. Conversation Memory & Context 🧠
+### E. Conversation Memory & Context 🧠 ([details](done/z-step-5-optional-details.md#conversation-memory--context-🧠))
 **Purpose**: Maintain context across multiple exchanges
 
 **Enhancement Ideas**:
@@ -79,7 +70,7 @@ These items from Step 4 are functional but can be enhanced for production:
 - Generate summary at session end
 - Allow facilitator to mark "key moments"
 
-### F. Enhanced Memory Management 💾
+### F. Enhanced Memory Management 💾 ([details](done/z-step-5-optional-details.md#enhanced-memory-management-💾))
 **Purpose**: Prevent memory leaks in long-running sessions
 
 **Monitoring Points**:
@@ -546,3 +537,52 @@ The remaining enhancements can be added based on specific needs.
 - Check for memory leaks in observers
 
 Remember: The bot works without any of these enhancements. Only implement what adds value to your specific use case. 
+
+Facilitator Page Authentication Gate 🔒
+---------------------------------------
+
+**Purpose**: Hide the facilitator page (`/session/facilitator`) behind the existing login system.
+
+**Effort**: ~2 hours (≈1 h coding + 1 h QA).
+
+### Implementation Steps
+
+1. **Route protection via middleware**
+
+   Add `/session/facilitator` to the `matcher` array in `middleware.ts`:
+
+   ```ts
+   export const config = {
+     matcher: [
+       '/protected/:path*',
+       '/session/facilitator' // new
+     ]
+   }
+   ```
+
+2. **Server-side session check**
+
+   At the top of `app/session/facilitator/page.tsx` (Server Component):
+
+   ```tsx
+   import { redirect } from 'next/navigation';
+   import { getServerAuthSession } from '@/lib/auth';
+
+   export default async function FacilitatorPage() {
+     const session = await getServerAuthSession();
+     if (!session) redirect('/sign-in');
+     // ... existing code ...
+   }
+   ```
+
+3. **Client-side wrapper (optional)**
+
+   If any Client Components rely on `useSession`, wrap them in `<SessionProvider>` and show a loading state while `status === 'loading'`.
+
+4. **QA checklist**
+
+   - Unauthenticated user is redirected to `/sign-in`.
+   - Authenticated user loads the facilitator UI and WebSocket connects.
+   - Partner page (`/session/partner`) remains public.
+
+--- 

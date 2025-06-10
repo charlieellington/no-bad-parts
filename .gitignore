@@ -51,3 +51,6 @@ agent/venv/
 agent/.venv/
 venv/
 .venv/
+
+# project documentation
+/references/

@@ -1,153 +1,115 @@
-# No Bad Parts Collective — Landing & Waitlist 🚀
+# No Bad Parts — Silent Coach Demo 🎥🧠
 
-[![Built with Supabase](https://img.shields.io/badge/Powered%20by-Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-*Peer-led Internal Family Systems collective — join the closed-alpha wait-list.*
+A two-URL proof-of-concept showing how a backstage AI "Silent Coach" can assist an Internal&nbsp;Family&nbsp;Systems (IFS) session in real time.
 
-![Screenshot of No Bad Parts Collective landing page](./app/opengraph-image.png)
+![Facilitator view](./public/assets/facilitator.jpg)
+
+![Partner view](./public/assets/partcipant.jpg)
 
 ---
+## What it does
 
-## 1  Create a Supabase project
+1. The **Partner** joins a Daily video room and speaks naturally.
+2. A **silent Agent** (Python + Pipecat) joins as `ai-coach`, captures _only_ the Partner's audio and streams it to OpenAI Whisper for speech-to-text.
+3. The transcript plus recent context is fed to GPT-4 which returns a short IFS-style coaching hint.
+4. Hints are pushed over a FastAPI WebSocket to every open **Facilitator** page, updating a live sidebar next to the video.
 
-1. Go to <https://database.new> (shortcut to Supabase).  
-2. Pick a name, password and **Create new project** – the database spins up in ~2 min.
+This gives the facilitator real-time, private suggestions without interrupting the partner's flow.
 
-## 2  Apply the database schema
+---
+## Live endpoints (after deploy)
 
-If you deploy with Vercel **and** connect your Supabase project in the deploy-wizard, *all SQL migrations run automatically* – skip ahead to Step&nbsp;3.
+• Vercel front-end
+  – `/session/partner` Full-screen Daily call for the participant  
+  – `/session/facilitator` Video + "Coach Panel" with streaming hints
 
-Creating the database by hand? Use the CLI once:
+• Fly.io agent
+  – `wss://<app>.fly.dev/ws` JSON stream of hint messages
 
-```bash
-# one-time setup
-supabase link --project-ref <your-project-ref>
-# pushes every *.sql file in supabase/migrations/ (idempotent)
-supabase db push
+---
+## Pipeline at a glance
+
+```mermaid
+flowchart TD
+    A[Partner audio] --> B[Daily WebRTC]
+    B --> C[Pipecat transport]
+    C --> D[OpenAI Whisper STT]
+    D --> E[GPT-4]
+    E --> F[FastAPI WebSocket]
+    F --> G[Facilitator UI]
 ```
 
-> The folder already contains everything you need: table, RLS policies, email-safe view, etc. Future changes are tracked as new files in the same directory.
+---
+## Tech stack
 
-## 3  (Optional) Add Re-Send e-mail keys
+• **Next.js 14** (Pages Router) + **Tailwind CSS / shadcn/ui**  
+• **Daily Prebuilt** iframe for instant video  
+• **Pipecat** orchestrating Whisper → GPT-4  
+• **FastAPI + WebSocket** for real-time delivery  
+• **Fly.io** (agent) & **Vercel** (front-end) for zero-config deploys
 
-Waitlist Kit ships with a welcome e-mail. To enable it (and to brand Supabase's magic-link e-mails) create an account at [Re-Send](https://resend.com) and copy:
+---
+## Quick start (local)
 
-| key | where to find it |
-| --- | --- |
-| `RESEND_API_KEY` | Re-Send dashboard → **API Keys** |
-| `RESEND_FROM_EMAIL` | A verified sender address (or the fallback `no-reply@resend.dev`) |
-
-Don't have them yet? Skip this step – the site works without and logs a friendly warning.
-
-> **Tip:** once keys are in place run `pnpm test:email` locally (requires `TEST_EMAIL=you@example.com`) to verify delivery.
-
-By default the repo will **not** send the extra *Welcome* e-mail.  
-If you'd like to enable it later simply add `ENABLE_WELCOME_EMAIL=true` to your env file.
-
-## 4  Point Supabase to Re-Send (1 min)
-
-In the Supabase dashboard open **Auth → Settings → SMTP** and paste:
-
-| field | value |
-|-------|-------|
-| Host  | `smtp.resend.com` |
-| Port  | `587` |
-| User  | `apikey` |
-| Password | your `RESEND_API_KEY` |
-| Sender name | whatever you like (e.g. *Waitlist Kit*) |
-
-Click **Save** → all Supabase OTP / magic-link e-mails now deliver via Re-Send.
-
-*(Advanced: you can edit subjects & HTML under **Auth → Templates**.)*
-
-## 5  Grab your API keys
-
-Open the new project → **Settings → API** and copy:
-
-| key | value location |
-| --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | "Project URL" |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | "anon (public)" key |
-
-*(You'll paste these in the next step.)*
-
-## 6  Quick-start deploy
-
-### Option A – Launch on Vercel (recommended)
-
-1. Click the button ↓. Choose the Git scope & repo name you want.  
-2. Hit **Create** → on the *Configure Project* screen fill the two env-vars with the keys from **Step 5**.  
-3. Click **Deploy** – Vercel builds the app and gives you a live URL.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fcharlieellington%2Fwaitlist-kit&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&optionalEnv=RESEND_API_KEY,RESEND_FROM_EMAIL&envDescription=Add+your+Supabase+URL+and+anon+key+(Re-Send+keys+optional).&envLink=https%3A%2F%2Fsupabase.com%2Fdashboard%2Fproject%2F_%2Fsettings%2Fapi)
-
-### Option B – Run locally
-
+### 1  Clone & install
 ```bash
-# 1. Clone the repo
-npx create-next-app waitlist-kit -e https://github.com/charlieellington/waitlist-kit
-cd waitlist-kit
-
-# 2. Add your keys
-cp env.example .env.local
-# open .env.local and paste the URL + anon key from Step 5
-# (Optional) add the Re-Send keys from Step 3 for welcome e-mails
-
-# 3. (Optional) run SQL migrations if you created a fresh database
-supabase db push --file supabase/migrations/init.sql
-
-# 4. Start the dev server
+git clone https://github.com/<your-org>/no-bad-parts.git
+cd no-bad-parts
 pnpm install
-pnpm dev
 ```
 
-#### Smoke-test
-
-1. Visit `http://localhost:3000` (or your Vercel URL).  
-2. The public list should render *"Join the waitlist"* header (no server error).  
-3. Click **Join the waitlist →** enter your email → you should see your name appear in the list.
-
-If that works you're ready to customise! 🎉
-
-## 7  Customise the template
-
-* **Landing copy** – edit `content.json` or tweak components in `components/`.
-* **Branding** – update `public/og-waitlist-kit.png`, favicon, colours, etc.
-* **Database** – add fields, adjust RLS and SQL in `supabase/migrations/`.
-
----
-
-## Ranking bonus (profile photo & reason)
-
-When a logged-in user uploads a photo or tells you why they're excited, they *jump up the wait-list*.
-
-Out-of-the-box we do this with a simple, RLS-safe trick: we set their `rank` to be the **smallest existing rank – 1** so the row bubbles to the top. No extra secrets needed.  
-Want a strict re-ordering algorithm? Add your **service-role** key and follow the steps in [`docs/ranking-bonus.md`](./docs/ranking-bonus.md).
-
----
-
-## Features
-
-• **Next 14 App Router** – typed server actions, streaming, RSC.
-• **Supabase** – Postgres, Auth (email magic-link), SQL migrations tracked in `supabase/migrations`.
-• **Tailwind CSS + shadcn/ui** – no custom CSS.
-• **Public wait-list view** – names only, never exposes email.
-• **Magic-link auth** – optional sign-in to update your row.
-• **Vercel × Supabase integration** – zero-config deploy.
-
----
-
-MIT licence – free to modify, distribute & **sell**. 🎉
-
-Built by Charlie Ellington – PRs & issues welcome!  
-Roadmap in [`scratchpad-waitlist.md`](./energy-flow/pages/03-projects/Waitlist-app/scratchpad-waitlist.md).
-
-### Handy scripts
-
+### 2  Environment
 ```bash
-pnpm dev      # start Next.js in development
-pnpm lint     # eslint + prettier
-pnpm build    # production build
-pnpm start    # run the production build locally
+# .env.local (front-end)
+NEXT_PUBLIC_DAILY_URL=https://your-room.daily.co/ifs-demo
+
+# .agent.env (backend)
+DAILY_ROOM_URL=https://your-room.daily.co/ifs-demo
+OPENAI_API_KEY=sk-…
 ```
+
+### 3  Run it
+```bash
+# Terminal A – Next.js
+pnpm dev
+
+# Terminal B – AI agent
+cd agent
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python server.py
+```
+Open:
+- http://localhost:3000/session/partner  (participant view)
+- http://localhost:3000/session/facilitator  (facilitator view)
+
+Speak in the Partner tab – hints should appear within ~2 s.
+
+---
+## Roadmap & build-plan milestones
+
+The short-term milestones that got us here:
+
+1. Scaffold repo, two session pages, FastAPI shell.  
+2. Daily Prebuilt working on both pages.  
+3. WebSocket echo channel.  
+4. Pipecat transport → Whisper → GPT-4 → broadcast hints.  
+5. Deploy agent to Fly, UI to Vercel.
+
+Detailed notes live under `references/buildplan_parts/`.
+
+---
+## Expected outcome
+
+By the end you have:
+
+• Two public URLs on Vercel (`/partner` & `/facilitator`).  
+• A Fly-hosted agent at `wss://<app>.fly.dev/ws` that silently listens, thinks, and streams hints.  
+• Incremental test checkpoints for each layer (video, WS, STT, LLM).
+
+---
+## License
+
+MIT – free to use, modify & sell. PRs welcome!
