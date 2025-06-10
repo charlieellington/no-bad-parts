@@ -18,7 +18,7 @@ export default function Facilitator() {
   // Start Guide inline
   // -----------------
   const [guideStep, setGuideStep] = useState<'hidden' | 'question' | 'yes' | 'no'>('hidden');
-  const [facilitatorGuideOpen, setFacilitatorGuideOpen] = useState(false);
+  const [facilitatorGuideOpen, setFacilitatorGuideOpen] = useState(true);
 
   const longIntro = `Long Intro Script (for someone new to IFS)
 "Brilliant, let's take a moment to set the scene.
@@ -152,8 +152,9 @@ That's all you need to know to begin. I'll guide you step by step, and you can't
     return (
       <div className="space-y-4 p-4 bg-white rounded-lg shadow-md w-full max-w-none">
         <p className="whitespace-pre-wrap text-sm leading-6">{script}</p>
-        <div className="flex justify-end">
-          <Button size="sm" variant="outline" onClick={() => setGuideStep('hidden')}>Close</Button>
+        <div className="flex gap-2 justify-end">
+          <Button size="sm" onClick={() => { setGuideStep('question'); setFacilitatorGuideOpen(false); }}>Start Script</Button>
+          <Button size="sm" variant="outline" onClick={() => setFacilitatorGuideOpen(false)}>Close</Button>
         </div>
       </div>
     );
@@ -173,7 +174,8 @@ Tip: After you ask a question from a hint, give the participant space to respond
     <div className="space-y-4 p-4 bg-white rounded-lg shadow-md w-full max-w-none">
       <h3 className="text-base font-semibold">Facilitator Guide</h3>
       <p className="text-sm leading-6 whitespace-pre-line">{facilitatorGuideText}</p>
-      <div className="flex justify-end">
+      <div className="flex gap-2 justify-end">
+        <Button size="sm" onClick={() => { setGuideStep('question'); setFacilitatorGuideOpen(false); }}>Start Script</Button>
         <Button size="sm" variant="outline" onClick={() => setFacilitatorGuideOpen(false)}>Close</Button>
       </div>
     </div>
@@ -270,8 +272,11 @@ Tip: After you ask a question from a hint, give the participant space to respond
             <Button size="sm" variant="secondary" onClick={() => {setGuideStep('question'); setFacilitatorGuideOpen(false);}}>
               Start Script
             </Button>
-            <Button size="sm" variant="outline" onClick={() => {setFacilitatorGuideOpen(true); setGuideStep('hidden');}}>
-              Facilitator Guide
+            <Button size="sm" variant="outline" onClick={() => {
+              setFacilitatorGuideOpen(!facilitatorGuideOpen);
+              setGuideStep('hidden');
+            }}>
+              {facilitatorGuideOpen ? 'Close facilitator guide' : 'Facilitator Guide'}
             </Button>
           </div>
           <div className="flex-1 overflow-y-auto min-h-0">
@@ -347,8 +352,11 @@ Tip: After you ask a question from a hint, give the participant space to respond
             <Button size="sm" variant="secondary" onClick={() => {setGuideStep('question'); setFacilitatorGuideOpen(false);}}>
               Start Script
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => {setFacilitatorGuideOpen(true); setGuideStep('hidden');}}>
-              Facilitator Guide
+            <Button size="sm" variant="secondary" onClick={() => {
+              setFacilitatorGuideOpen(!facilitatorGuideOpen);
+              setGuideStep('hidden');
+            }}>
+              {facilitatorGuideOpen ? 'Close facilitator guide' : 'Facilitator Guide'}
             </Button>
           </div>
           <div className="flex-1 overflow-y-auto min-h-0">
