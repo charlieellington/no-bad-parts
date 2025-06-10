@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
@@ -23,6 +23,11 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), ".env"))
 
 # Track active WebSocket clients (facilitators) - moved before lifespan
 active_connections: list[WebSocket] = []
+
+# Optional admin token for privileged actions such as restarting the bot. When set,
+# clients must supply this token as a query parameter (?token=XYZ) when calling
+# the admin endpoints.
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "")
 
 
 # Broadcast function defined before lifespan
@@ -58,8 +63,8 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting AI coach bot as background task...")
     
-    # Import bot module (must be done here to avoid circular imports)
-    from bot import run_bot
+    # Import bot module via absolute path so it works regardless of cwd
+    from agent.bot import run_bot
     
     # Create background task for the bot with broadcast function
     asyncio.create_task(run_bot(broadcast_hint))
@@ -180,6 +185,39 @@ async def websocket_endpoint(ws: WebSocket):
         if ws in active_connections:
             active_connections.remove(ws)
             logger.info(f"Client {client_id} removed. Active connections: {len(active_connections)}")
+
+
+# ---------------------------------------------------------------------------
+# Admin – restart the agent (causes Fly.io to recycle the VM automatically)
+# ---------------------------------------------------------------------------
+
+# IMPORTANT: This endpoint intentionally exits the process after returning a 202
+# response. Fly.io (and most process managers) will automatically restart the
+# container. Protect with ADMIN_TOKEN in production.
+
+
+@app.post("/admin/restart", status_code=202)
+async def admin_restart(token: str | None = Query(default=None)):
+    """Gracefully exit the process so Fly.io restarts the VM.
+
+    Usage (no token set):
+        curl -X POST https://<app>.fly.dev/admin/restart
+
+    Usage (with ADMIN_TOKEN):
+        curl -X POST "https://<app>.fly.dev/admin/restart?token=SECRET"
+    """
+
+    if ADMIN_TOKEN and token != ADMIN_TOKEN:
+        logger.warning("Unauthorized restart attempt")
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    logger.warning("⚠️  Restart requested via /admin/restart – exiting process…")
+
+    # Delay the exit just long enough for the HTTP response to be sent
+    loop = asyncio.get_event_loop()
+    loop.call_later(0.1, lambda: os._exit(0))
+
+    return {"detail": "Restarting agent"}
 
 
 if __name__ == "__main__":

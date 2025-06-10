@@ -23,6 +23,15 @@ This guide documents how to properly start development servers, run tests, and a
 
 ### Starting the System (NEW - Integrated Setup)
 
+**One-liner using Makefile helper**
+
+```bash
+# From project root
+make dev     # expands to: uvicorn agent.server:app --reload --port 8000
+```
+
+If you prefer the explicit commands, see below:
+
 **Terminal 1 - Start BOTH FastAPI Backend + Bot:**
 ```bash
 # Navigate to agent directory

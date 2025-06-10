@@ -179,6 +179,28 @@ Tip: After you ask a question from a hint, give the participant space to respond
     </div>
   );
   
+  // -----------------
+  // Restart bot logic
+  // -----------------
+  const handleRestart = async () => {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const adminToken = process.env.NEXT_PUBLIC_ADMIN_TOKEN;
+    const url = `${baseUrl}/admin/restart${adminToken ? `?token=${adminToken}` : ''}`;
+
+    try {
+      const res = await fetch(url, { method: 'POST' });
+      if (res.ok) {
+        alert('Bot is restarting… It should reconnect in a few seconds.');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(`Failed to restart bot: ${data.detail || res.statusText}`);
+      }
+    } catch (err) {
+      console.error('Failed to call restart endpoint', err);
+      alert('Network error while requesting restart');
+    }
+  };
+  
   return (
     <>
       {/* Branding Banner */}
@@ -211,7 +233,18 @@ Tip: After you ask a question from a hint, give the participant space to respond
         >
           <div className="flex items-center justify-between mb-3 flex-shrink-0">
             <h2 className="text-lg font-semibold">Facilitator Hints</h2>
-            <ConnectionStatus />
+            {/* Right-hand column: status + restart */}
+            <div className="flex items-center gap-2">
+              <ConnectionStatus />
+              <Button
+                size="sm"
+                variant="link"
+                className="text-orange-600 hover:text-orange-700 px-0 text-xs"
+                onClick={handleRestart}
+              >
+                Restart
+              </Button>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2 mb-4 flex-shrink-0">
             {connectionStatus !== 'disconnected' && hints.length > 0 && (
@@ -278,7 +311,17 @@ Tip: After you ask a question from a hint, give the participant space to respond
         >
           <div className="flex items-center justify-between mb-3 flex-shrink-0">
             <h2 className="text-lg font-semibold">Facilitator Hints</h2>
-            <ConnectionStatus />
+            <div className="flex items-center gap-2">
+              <ConnectionStatus />
+              <Button
+                size="sm"
+                variant="link"
+                className="text-orange-600 hover:text-orange-700 px-0 text-xs"
+                onClick={handleRestart}
+              >
+                Restart
+              </Button>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2 mb-4 flex-shrink-0">
             {connectionStatus !== 'disconnected' && hints.length > 0 && (

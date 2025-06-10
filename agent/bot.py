@@ -313,9 +313,33 @@ async def run_bot(broadcast_fn: Optional[Callable] = None) -> None:
         user_name = participants.get(user_id, "unknown")
         logger.info(f"👋 {user_name} left ({reason})")
         # Temporarily keep bot running even after partner leaves for easier testing
-        # if user_name == "partner" and task:
-        #     logger.info("Partner left – stopping bot.")
-        #     await task.cancel()
+        global partner_id  # allow mutation
+
+        # If the departing participant *was* the current partner, reset state so that the next
+        # human who joins becomes the new partner and we start with a clean slate. This avoids
+        # situations where the bot stays alive but no longer processes transcripts after a
+        # tab refresh or disconnect.
+
+        if user_id == partner_id:
+            logger.info("🔄 Partner left – clearing conversation state and waiting for new partner…")
+
+            # Reset partner tracking so the next human to join becomes the partner again
+            partner_id = None
+
+            # Clear join order and conversation memory
+            human_join_order.clear()
+            conversation_history.clear()
+
+            # Reset transcript accumulator buffers so a new session starts fresh
+            accumulator.final_transcripts.clear()
+            accumulator.interim_transcripts.clear()
+            accumulator.all_transcripts.clear()
+            accumulator.last_transcript_time = None
+            accumulator.processing = False
+
+            # Optionally notify connected facilitators that the session has ended (future)
+            # if broadcast_hint_fn:
+            #     await broadcast_hint_fn("Partner disconnected – waiting for new participant…")
 
     @transport.event_handler("on_transcription_message")
     async def _on_transcription(_transport, message):
