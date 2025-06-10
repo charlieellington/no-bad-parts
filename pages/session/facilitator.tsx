@@ -29,7 +29,7 @@ Self: Beneath every Part is you at your calmest and clearest — what we call 'S
 
 What we'll do:
 
-Notice which Parts are present right now.
+Notice which Parts are present right now (feel free to close your eyes and settle into a light meditative state).
 
 Listen to what each one needs.
 
@@ -47,7 +47,7 @@ That's all you need to know to begin. I'll guide you step by step, and you can't
   const shortIntro = `Brief Refresher Script (for someone with IFS experience)
 "Great — a quick reminder before we dive in.
 
-• We'll invite whichever Parts are most active today, greet them with curiosity, and let Self lead the conversation.
+• We'll invite whichever Parts are most active today, greet them with curiosity, and let Self lead the conversation (closing your eyes can help you focus).
 • Remember, every Part carries positive intent, even if its strategy feels tough.
 • You're free to slow down, pause, or switch focus at any time.
 

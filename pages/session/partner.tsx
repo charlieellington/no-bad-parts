@@ -4,8 +4,9 @@ export default function Partner() {
   
   return (
     <>
-      <header className="fixed top-0 left-0 w-full bg-white shadow z-30 py-2 flex justify-center">
+      <header className="fixed top-0 left-0 w-full bg-white shadow z-30 py-2 flex flex-col items-center gap-1">
         <h1 className="text-sm font-medium text-gray-700">No Bad Parts Collective</h1>
+        <p className="text-[11px] text-gray-500">The facilitator will guide you—sit back and relax.</p>
       </header>
       <iframe
         src={`${dailyUrl}?userName=partner`}
