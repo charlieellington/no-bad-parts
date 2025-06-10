@@ -556,4 +556,8 @@ The assistant now understands the complete flow of conversation, not just fragme
 - README rewritten using build-plan summary & outcome
 - Added facilitator and partner screenshots to showcase views
 
+### 2025-06-10 – Added /start Page
+- Created `pages/start.tsx` with quick-start instructions, buttons, and copy feature.
+- Uses shadcn/ui `Button` & `Tooltip`, Tailwind-only styling.
+
 ---
