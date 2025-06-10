@@ -51,3 +51,4 @@ agent/venv/
 agent/.venv/
 venv/
 .venv/
+agent/venv_new/
