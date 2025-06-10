@@ -62,15 +62,15 @@ export default function StartPage() {
           <h2 className="text-2xl font-semibold text-center">Quick Start Guide</h2>
           <div className="grid gap-6 sm:grid-cols-3">
             <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-lg">
-              <img src="/assets/facilitator.jpg" alt="Video call screenshot" className="rounded shadow-md object-cover h-40 w-full" />
+              <img src="/assets/facilitator.jpg" alt="Video call screenshot" className="rounded w-full h-auto object-cover aspect-video" />
               <p className="font-medium">Real, face-to-face presence — no chatbot monologues.</p>
             </div>
             <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-lg">
-              <img src="/assets/2.jpg" alt="Coach panel prompt" className="rounded shadow-md object-cover h-40 w-full" />
+              <img src="/assets/2.jpg" alt="Coach panel prompt" className="rounded w-full h-auto object-cover aspect-video" />
               <p className="font-medium">AI stays backstage, offering prompts so the facilitator can stay present.</p>
             </div>
             <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-lg">
-              <img src="/assets/partcipant.jpg" alt="Role swap" className="rounded shadow-md object-cover h-40 w-full" />
+              <img src="/assets/partcipant.jpg" alt="Role swap" className="rounded w-full h-auto object-cover aspect-video" />
               <p className="font-medium">Role-swap model: everyone gives as much as they receive.</p>
             </div>
           </div>
