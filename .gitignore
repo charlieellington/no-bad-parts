@@ -48,6 +48,7 @@ supabase/config.toml
 # Python virtual-environment dirs
 # ──────────────────────────────
 agent/venv/
+agent/venv_new/
 agent/.venv/
 venv/
 .venv/
