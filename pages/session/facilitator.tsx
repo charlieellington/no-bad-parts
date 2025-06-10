@@ -226,7 +226,7 @@ Tip: After you ask a question from a hint, give the participant space to respond
               onClick={async () => {
                 if (!isWsConnected) return;
                 try {
-                  await fetch(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/regenerate-hint', { method: 'POST' });
+                  await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/regenerate-hint`, { method: 'POST' });
                 } catch (e) {
                   console.error('Failed to request regenerate-hint', e);
                 }
@@ -293,7 +293,7 @@ Tip: After you ask a question from a hint, give the participant space to respond
               onClick={async () => {
                 if (!isWsConnected) return;
                 try {
-                  await fetch(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/regenerate-hint', { method: 'POST' });
+                  await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/regenerate-hint`, { method: 'POST' });
                 } catch (e) {
                   console.error('Failed to request regenerate-hint', e);
                 }
